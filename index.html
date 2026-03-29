@@ -665,7 +665,37 @@ function applyPoseToModel(lms) {
   // 두 랜드마크 사이의 방향 벡터
   const segDir = (a, b) => toV(b).sub(toV(a)).normalize();
 
-  // ── 척추 ──
+  // ── 힙 yaw (몸통 좌우 회전) ──
+  // 어깨축과 힙축의 XZ 평면 방향으로 몸이 얼마나 돌아있는지 계산
+  if (vis(11) && vis(12) && vis(23) && vis(24)) {
+    const lSh = toV(11), rSh = toV(12);
+    const lHp = toV(23), rHp = toV(24);
+
+    // 좌어깨 - 우어깨 벡터 (XZ 투영) — 정면 시: +X 방향
+    const shLat = new THREE.Vector3(lSh.x - rSh.x, 0, lSh.z - rSh.z);
+    const hpLat = new THREE.Vector3(lHp.x - rHp.x, 0, lHp.z - rHp.z);
+
+    // 두 벡터 평균으로 안정화
+    const lat = shLat.add(hpLat).normalize();
+    if (lat.lengthSq() > 0.01) {
+      // 정면 기준(+X) 대비 회전각. 미러뷰이므로 부호 반전
+      const yaw = -Math.atan2(lat.z, lat.x);
+
+      const hipBone = bones[BONE_MAP.hips];
+      if (hipBone) {
+        const parentWorldQ = new THREE.Quaternion();
+        if (hipBone.parent) hipBone.parent.getWorldQuaternion(parentWorldQ);
+        // 월드 Y축을 부모 로컬로 변환 후 그 축으로 회전
+        const localY = new THREE.Vector3(0, 1, 0).applyQuaternion(parentWorldQ.clone().invert()).normalize();
+        const deltaQ  = new THREE.Quaternion().setFromAxisAngle(localY, yaw);
+        const rd = restData[BONE_MAP.hips];
+        const finalQ = deltaQ.clone().multiply(rd ? rd.restQ : new THREE.Quaternion());
+        hipBone.quaternion.slerp(finalQ, 1.0 - smoothing);
+      }
+    }
+  }
+
+  // ── 척추 (기울기) ──
   if (vis(11) && vis(12) && vis(23) && vis(24)) {
     const shoulderMid = toV(11).add(toV(12)).multiplyScalar(0.5);
     const hipMid      = toV(23).add(toV(24)).multiplyScalar(0.5);
