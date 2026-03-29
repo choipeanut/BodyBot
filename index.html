@@ -93,6 +93,26 @@
   }
   #toast.show { opacity: 1; }
 
+  #drop-overlay {
+    position: absolute; inset: 0;
+    border: 3px dashed transparent;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none; z-index: 20;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  #drop-overlay.active {
+    border-color: var(--neon);
+    background: rgba(0,255,136,0.06);
+  }
+  #drop-msg {
+    font-size: 1.4rem; color: var(--neon);
+    font-weight: 700; letter-spacing: 1px;
+    opacity: 0; transition: opacity 0.2s;
+    text-shadow: 0 0 20px var(--neon);
+  }
+  #drop-overlay.active #drop-msg { opacity: 1; }
+
   #model-loading .spinner {
     width: 40px; height: 40px;
     border: 3px solid var(--border); border-top-color: var(--neon);
@@ -163,12 +183,18 @@
   </div>
   <div id="threejs-panel">
     <div id="toast"></div>
+    <div id="drop-overlay">
+      <div id="drop-msg">GLB 파일을 여기에 놓으세요</div>
+    </div>
     <div id="model-loading">
       <div class="spinner"></div>
-      <div>character.glb 로드 중...</div>
+      <div id="loading-text">박스맨 준비 중...</div>
     </div>
   </div>
 </div>
+
+<!-- 숨겨진 파일 입력 -->
+<input type="file" id="file-input" accept=".glb,.gltf" style="display:none" onchange="onFileSelected(this)">
 
 <div id="controls">
   <div class="ctrl-group">
@@ -185,11 +211,10 @@
     <span class="ctrl-val" id="scale-val">1.5</span>
   </div>
   <div class="ctrl-group">
-    <span class="ctrl-label">모델</span>
-    <select class="ctrl-select" id="model-select" onchange="onModelChange(this.value)">
-      <option value="custom" selected>character.glb</option>
-      <option value="fallback">박스맨 (기본)</option>
-    </select>
+    <button class="ctrl-btn" onclick="document.getElementById('file-input').click()">📂 GLB 불러오기</button>
+  </div>
+  <div class="ctrl-group">
+    <button class="ctrl-btn" onclick="buildFallbackCharacter()">박스맨</button>
   </div>
   <div class="ctrl-group">
     <button class="ctrl-btn" onclick="resetPose()">↺ 포즈 리셋</button>
@@ -355,8 +380,8 @@ function initThree() {
 
   clock = new THREE.Clock();
 
-  // character.glb 우선 로드, 실패 시 박스맨
-  loadGLTFCharacter('./models/character.glb');
+  // 박스맨으로 바로 시작 (GLB는 드래그앤드롭 또는 파일 선택으로 로드)
+  buildFallbackCharacter();
 
   // 렌더 루프
   (function loop() {
@@ -392,28 +417,63 @@ function showToast(msg, ms = 3000) {
 }
 
 // ─────────────────────────────────────────────
-// GLTF 로더
+// GLTF 로더 (ArrayBuffer 방식 — 파일 시스템 불필요)
 // ─────────────────────────────────────────────
 const gltfLoader = new GLTFLoader();
 
-function loadGLTFCharacter(url) {
+function loadGLTFFromBuffer(arrayBuffer, fileName) {
   const loadingEl = document.getElementById('model-loading');
+  document.getElementById('loading-text').textContent = fileName + ' 로드 중...';
   loadingEl.style.display = 'flex';
-  loadingEl.querySelector('div:last-child').textContent = url + ' 로드 중...';
 
-  gltfLoader.load(url, (gltf) => {
+  gltfLoader.parse(arrayBuffer, '', (gltf) => {
     gltf.scene.traverse(obj => {
       if (obj.isMesh) { obj.castShadow = true; obj.receiveShadow = true; }
     });
     replaceCharacter(gltf.scene);
     loadingEl.style.display = 'none';
-    console.log('[MotionMirror] GLTF 로드 완료. 전체 오브젝트:', Object.keys(bones).length, '개');
-  }, undefined, (err) => {
-    console.warn('[MotionMirror] GLTF 로드 실패 → 박스맨 사용:', err.message);
-    showToast(`⚠️ ${url} 로드 실패\n박스맨으로 대체됩니다.\n(models/ 폴더에 파일이 있는지 확인하세요)`, 5000);
-    buildFallbackCharacter();
+    console.log('[MotionMirror] 로드 완료. 오브젝트 수:', Object.keys(bones).length);
+  }, (err) => {
+    console.error('[MotionMirror] 파싱 실패:', err);
+    showToast('⚠️ GLB 파싱 실패: ' + (err.message || err), 5000);
     loadingEl.style.display = 'none';
-    document.getElementById('model-select').value = 'fallback';
+  });
+}
+
+// 파일 선택 버튼
+window.onFileSelected = function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => loadGLTFFromBuffer(e.target.result, file.name);
+  reader.readAsArrayBuffer(file);
+  input.value = ''; // 같은 파일 재선택 허용
+};
+
+// 드래그 앤 드롭
+function initDragDrop() {
+  const panel = document.getElementById('threejs-panel');
+  const overlay = document.getElementById('drop-overlay');
+
+  panel.addEventListener('dragover', e => {
+    e.preventDefault();
+    overlay.classList.add('active');
+  });
+  panel.addEventListener('dragleave', e => {
+    if (!panel.contains(e.relatedTarget)) overlay.classList.remove('active');
+  });
+  panel.addEventListener('drop', e => {
+    e.preventDefault();
+    overlay.classList.remove('active');
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    if (!file.name.match(/\.(glb|gltf)$/i)) {
+      showToast('⚠️ GLB 또는 GLTF 파일만 지원합니다', 3000);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = ev => loadGLTFFromBuffer(ev.target.result, file.name);
+    reader.readAsArrayBuffer(file);
   });
 }
 
@@ -778,11 +838,6 @@ document.getElementById('char-scale').addEventListener('input', function() {
   if (character) character.scale.setScalar(s);
 });
 
-window.onModelChange = val => {
-  if (val === 'custom') loadGLTFCharacter('./models/character.glb');
-  else buildFallbackCharacter();
-};
-
 window.onBgChange = val => {
   const c = val === 'light' ? 0xdde8ff : 0x0a0a1a;
   scene.background = new THREE.Color(c);
@@ -802,6 +857,7 @@ window.resetPose = () => {
 // 시작
 // ─────────────────────────────────────────────
 initThree();
+initDragDrop();
 </script>
 </body>
 </html>
