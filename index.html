@@ -258,14 +258,25 @@ let BONE_MAP = {
   leftLowerLeg:  'mixamorigLeftLeg',
   rightUpperLeg: 'mixamorigRightUpLeg',
   rightLowerLeg: 'mixamorigRightLeg',
+  // 왼손 손가락
+  leftThumb1:'mixamorigLeftHandThumb1', leftThumb2:'mixamorigLeftHandThumb2', leftThumb3:'mixamorigLeftHandThumb3',
+  leftIndex1:'mixamorigLeftHandIndex1', leftIndex2:'mixamorigLeftHandIndex2', leftIndex3:'mixamorigLeftHandIndex3',
+  leftMiddle1:'mixamorigLeftHandMiddle1',leftMiddle2:'mixamorigLeftHandMiddle2',leftMiddle3:'mixamorigLeftHandMiddle3',
+  leftRing1:'mixamorigLeftHandRing1',   leftRing2:'mixamorigLeftHandRing2',   leftRing3:'mixamorigLeftHandRing3',
+  leftPinky1:'mixamorigLeftHandPinky1', leftPinky2:'mixamorigLeftHandPinky2', leftPinky3:'mixamorigLeftHandPinky3',
+  // 오른손 손가락
+  rightThumb1:'mixamorigRightHandThumb1', rightThumb2:'mixamorigRightHandThumb2', rightThumb3:'mixamorigRightHandThumb3',
+  rightIndex1:'mixamorigRightHandIndex1', rightIndex2:'mixamorigRightHandIndex2', rightIndex3:'mixamorigRightHandIndex3',
+  rightMiddle1:'mixamorigRightHandMiddle1',rightMiddle2:'mixamorigRightHandMiddle2',rightMiddle3:'mixamorigRightHandMiddle3',
+  rightRing1:'mixamorigRightHandRing1',   rightRing2:'mixamorigRightHandRing2',   rightRing3:'mixamorigRightHandRing3',
+  rightPinky1:'mixamorigRightHandPinky1', rightPinky2:'mixamorigRightHandPinky2', rightPinky3:'mixamorigRightHandPinky3',
 };
 
-// 뼈 이름 후보 목록 (Mixamo / 기타 익스포터 / VRM 등)
 const BONE_CANDIDATES = {
   hips:          ['mixamorigHips','Hips','hips','pelvis','Pelvis','Hip','CC_Base_Hip'],
   spine:         ['mixamorigSpine','Spine','spine','Spine1','spine01','CC_Base_Spine01'],
   neck:          ['mixamorigNeck','Neck','neck','CC_Base_NeckTwist01'],
-  leftUpperArm:  ['mixamorigLeftArm','LeftArm','Left_Arm','mixamorig:LeftArm','UpperArm_L','CC_Base_L_Upperarm'],
+  leftUpperArm:  ['mixamorigLeftArm','LeftArm','Left_Arm','UpperArm_L','CC_Base_L_Upperarm'],
   leftLowerArm:  ['mixamorigLeftForeArm','LeftForeArm','Left_ForeArm','ForeArm_L','CC_Base_L_Forearm'],
   rightUpperArm: ['mixamorigRightArm','RightArm','Right_Arm','UpperArm_R','CC_Base_R_Upperarm'],
   rightLowerArm: ['mixamorigRightForeArm','RightForeArm','Right_ForeArm','ForeArm_R','CC_Base_R_Forearm'],
@@ -273,6 +284,37 @@ const BONE_CANDIDATES = {
   leftLowerLeg:  ['mixamorigLeftLeg','LeftLeg','LeftShin','Shin_L','CC_Base_L_Calf'],
   rightUpperLeg: ['mixamorigRightUpLeg','RightUpLeg','RightThigh','Thigh_R','CC_Base_R_Thigh'],
   rightLowerLeg: ['mixamorigRightLeg','RightLeg','RightShin','Shin_R','CC_Base_R_Calf'],
+  // 손가락 — Mixamo 이름 + 일반 패턴
+  leftThumb1: ['mixamorigLeftHandThumb1','LeftHandThumb1','Left_Thumb1','thumb_01_l'],
+  leftThumb2: ['mixamorigLeftHandThumb2','LeftHandThumb2','Left_Thumb2','thumb_02_l'],
+  leftThumb3: ['mixamorigLeftHandThumb3','LeftHandThumb3','Left_Thumb3','thumb_03_l'],
+  leftIndex1: ['mixamorigLeftHandIndex1','LeftHandIndex1','Left_Index1','index_01_l'],
+  leftIndex2: ['mixamorigLeftHandIndex2','LeftHandIndex2','Left_Index2','index_02_l'],
+  leftIndex3: ['mixamorigLeftHandIndex3','LeftHandIndex3','Left_Index3','index_03_l'],
+  leftMiddle1:['mixamorigLeftHandMiddle1','LeftHandMiddle1','Left_Middle1','middle_01_l'],
+  leftMiddle2:['mixamorigLeftHandMiddle2','LeftHandMiddle2','Left_Middle2','middle_02_l'],
+  leftMiddle3:['mixamorigLeftHandMiddle3','LeftHandMiddle3','Left_Middle3','middle_03_l'],
+  leftRing1:  ['mixamorigLeftHandRing1','LeftHandRing1','Left_Ring1','ring_01_l'],
+  leftRing2:  ['mixamorigLeftHandRing2','LeftHandRing2','Left_Ring2','ring_02_l'],
+  leftRing3:  ['mixamorigLeftHandRing3','LeftHandRing3','Left_Ring3','ring_03_l'],
+  leftPinky1: ['mixamorigLeftHandPinky1','LeftHandPinky1','Left_Pinky1','pinky_01_l'],
+  leftPinky2: ['mixamorigLeftHandPinky2','LeftHandPinky2','Left_Pinky2','pinky_02_l'],
+  leftPinky3: ['mixamorigLeftHandPinky3','LeftHandPinky3','Left_Pinky3','pinky_03_l'],
+  rightThumb1:['mixamorigRightHandThumb1','RightHandThumb1','Right_Thumb1','thumb_01_r'],
+  rightThumb2:['mixamorigRightHandThumb2','RightHandThumb2','Right_Thumb2','thumb_02_r'],
+  rightThumb3:['mixamorigRightHandThumb3','RightHandThumb3','Right_Thumb3','thumb_03_r'],
+  rightIndex1:['mixamorigRightHandIndex1','RightHandIndex1','Right_Index1','index_01_r'],
+  rightIndex2:['mixamorigRightHandIndex2','RightHandIndex2','Right_Index2','index_02_r'],
+  rightIndex3:['mixamorigRightHandIndex3','RightHandIndex3','Right_Index3','index_03_r'],
+  rightMiddle1:['mixamorigRightHandMiddle1','RightHandMiddle1','Right_Middle1','middle_01_r'],
+  rightMiddle2:['mixamorigRightHandMiddle2','RightHandMiddle2','Right_Middle2','middle_02_r'],
+  rightMiddle3:['mixamorigRightHandMiddle3','RightHandMiddle3','Right_Middle3','middle_03_r'],
+  rightRing1: ['mixamorigRightHandRing1','RightHandRing1','Right_Ring1','ring_01_r'],
+  rightRing2: ['mixamorigRightHandRing2','RightHandRing2','Right_Ring2','ring_02_r'],
+  rightRing3: ['mixamorigRightHandRing3','RightHandRing3','Right_Ring3','ring_03_r'],
+  rightPinky1:['mixamorigRightHandPinky1','RightHandPinky1','Right_Pinky1','pinky_01_r'],
+  rightPinky2:['mixamorigRightHandPinky2','RightHandPinky2','Right_Pinky2','pinky_02_r'],
+  rightPinky3:['mixamorigRightHandPinky3','RightHandPinky3','Right_Pinky3','pinky_03_r'],
 };
 
 // 실제 뼈대 목록에서 BONE_MAP 자동 해석
@@ -730,12 +772,47 @@ function applyPoseToModel(lms) {
 }
 
 // ─────────────────────────────────────────────
-// MediaPipe 초기화
+// 손가락 세그먼트 정의 (MediaPipe Hands 21점 기준)
+// ─────────────────────────────────────────────
+// MediaPipe Hands: 0=손목, 1-4=엄지, 5-8=검지, 9-12=중지, 13-16=약지, 17-20=새끼
+const FINGER_SEGS_L = [
+  {key:'leftThumb1', from:1, to:2},{key:'leftThumb2', from:2, to:3},{key:'leftThumb3', from:3, to:4},
+  {key:'leftIndex1', from:5, to:6},{key:'leftIndex2', from:6, to:7},{key:'leftIndex3', from:7, to:8},
+  {key:'leftMiddle1',from:9, to:10},{key:'leftMiddle2',from:10,to:11},{key:'leftMiddle3',from:11,to:12},
+  {key:'leftRing1',  from:13,to:14},{key:'leftRing2',  from:14,to:15},{key:'leftRing3',  from:15,to:16},
+  {key:'leftPinky1', from:17,to:18},{key:'leftPinky2', from:18,to:19},{key:'leftPinky3', from:19,to:20},
+];
+const FINGER_SEGS_R = [
+  {key:'rightThumb1', from:1, to:2},{key:'rightThumb2', from:2, to:3},{key:'rightThumb3', from:3, to:4},
+  {key:'rightIndex1', from:5, to:6},{key:'rightIndex2', from:6, to:7},{key:'rightIndex3', from:7, to:8},
+  {key:'rightMiddle1',from:9, to:10},{key:'rightMiddle2',from:10,to:11},{key:'rightMiddle3',from:11,to:12},
+  {key:'rightRing1',  from:13,to:14},{key:'rightRing2',  from:14,to:15},{key:'rightRing3',  from:15,to:16},
+  {key:'rightPinky1', from:17,to:18},{key:'rightPinky2', from:18,to:19},{key:'rightPinky3', from:19,to:20},
+];
+
+function applyHandToModel(handLms, segs) {
+  if (!handLms || !character || Object.keys(restData).length === 0) return;
+  // 손 랜드마크도 동일한 이미지 정규화 좌표 [0,1]
+  const toH = i => new THREE.Vector3(
+    (handLms[i].x - 0.5),
+    -(handLms[i].y - 0.5),
+    -(handLms[i].z ?? 0) * 0.3
+  );
+  for (const {key, from, to} of segs) {
+    const boneName = BONE_MAP[key];
+    if (!boneName) continue;
+    const dir = toH(to).sub(toH(from));
+    if (dir.lengthSq() > 1e-6) setBoneDir(boneName, dir.normalize());
+  }
+}
+
+// ─────────────────────────────────────────────
+// MediaPipe 초기화 (Holistic = Pose + Hands 통합)
 // ─────────────────────────────────────────────
 function loadMediaPipeScripts() {
   return new Promise((resolve, reject) => {
     const s1 = document.createElement('script');
-    s1.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js';
+    s1.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5.1675471629/holistic.js';
     s1.onload = () => {
       const s2 = document.createElement('script');
       s2.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js';
@@ -757,17 +834,19 @@ async function startWebcam() {
     await loadMediaPipeScripts();
     const video = document.getElementById('input_video');
 
-    poseDetector = new window.Pose({
-      locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/${f}`
+    // Holistic = Pose + Hands + Face 통합 솔루션
+    poseDetector = new window.Holistic({
+      locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5.1675471629/${f}`
     });
     poseDetector.setOptions({
       modelComplexity: 1,
       smoothLandmarks: true,
       enableSegmentation: false,
+      refineFaceLandmarks: false,
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5,
     });
-    poseDetector.onResults(onPoseResults);
+    poseDetector.onResults(onHolisticResults);
 
     const cam = new window.Camera(video, {
       onFrame: async () => { await poseDetector.send({ image: video }); },
@@ -811,12 +890,14 @@ function stopWebcam() {
 // ─────────────────────────────────────────────
 // 포즈 결과 처리
 // ─────────────────────────────────────────────
-function onPoseResults(results) {
+function onHolisticResults(results) {
   drawLandmarks(results);
   if (!results.poseLandmarks) { setStatus('포즈 감지 안됨', false); return; }
   setStatus('실시간 감지 중', true);
-  // poseLandmarks 사용 (x,y ∈[0,1], z 상대깊이) — worldLandmarks는 미터단위라 변환 불일치
   applyPoseToModel(results.poseLandmarks);
+  // leftHandLandmarks = 사람의 해부학적 왼손, rightHandLandmarks = 오른손
+  applyHandToModel(results.leftHandLandmarks,  FINGER_SEGS_L);
+  applyHandToModel(results.rightHandLandmarks, FINGER_SEGS_R);
 }
 
 function setStatus(msg, active) {
@@ -832,6 +913,30 @@ const SKEL_CONNECTIONS = [
   [11,23],[12,24],[23,24],[23,25],[25,27],[24,26],[26,28]
 ];
 const KEY_JOINTS = [0,11,12,13,14,15,16,23,24,25,26,27,28];
+const HAND_CONNECTIONS = [
+  [0,1],[1,2],[2,3],[3,4],
+  [0,5],[5,6],[6,7],[7,8],
+  [0,9],[9,10],[10,11],[11,12],
+  [0,13],[13,14],[14,15],[15,16],
+  [0,17],[17,18],[18,19],[19,20],
+  [5,9],[9,13],[13,17],
+];
+
+function drawHandOverlay(ctx, lms, W, H, color) {
+  if (!lms) return;
+  ctx.strokeStyle = color; ctx.lineWidth = 1.5;
+  for (const [a, b] of HAND_CONNECTIONS) {
+    ctx.beginPath();
+    ctx.moveTo(lms[a].x * W, lms[a].y * H);
+    ctx.lineTo(lms[b].x * W, lms[b].y * H);
+    ctx.stroke();
+  }
+  for (const lm of lms) {
+    ctx.beginPath();
+    ctx.arc(lm.x * W, lm.y * H, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = color; ctx.fill();
+  }
+}
 
 function drawLandmarks(results) {
   const canvas = document.getElementById('overlay_canvas');
@@ -841,25 +946,30 @@ function drawLandmarks(results) {
   canvas.height = video.videoHeight || canvas.offsetHeight;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (!results.poseLandmarks) return;
-  const lms = results.poseLandmarks;
   const W = canvas.width, H = canvas.height;
 
-  ctx.strokeStyle = '#00ff88'; ctx.lineWidth = 2;
-  for (const [a, b] of SKEL_CONNECTIONS) {
-    if (lms[a].visibility < 0.3 || lms[b].visibility < 0.3) continue;
-    ctx.beginPath();
-    ctx.moveTo(lms[a].x * W, lms[a].y * H);
-    ctx.lineTo(lms[b].x * W, lms[b].y * H);
-    ctx.stroke();
+  if (results.poseLandmarks) {
+    const lms = results.poseLandmarks;
+    ctx.strokeStyle = '#00ff88'; ctx.lineWidth = 2;
+    for (const [a, b] of SKEL_CONNECTIONS) {
+      if (lms[a].visibility < 0.3 || lms[b].visibility < 0.3) continue;
+      ctx.beginPath();
+      ctx.moveTo(lms[a].x * W, lms[a].y * H);
+      ctx.lineTo(lms[b].x * W, lms[b].y * H);
+      ctx.stroke();
+    }
+    for (const i of KEY_JOINTS) {
+      if (lms[i].visibility < 0.3) continue;
+      ctx.beginPath();
+      ctx.arc(lms[i].x * W, lms[i].y * H, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#00ff88'; ctx.fill();
+      ctx.strokeStyle = '#003322'; ctx.lineWidth = 1; ctx.stroke();
+    }
   }
-  for (const i of KEY_JOINTS) {
-    if (lms[i].visibility < 0.3) continue;
-    ctx.beginPath();
-    ctx.arc(lms[i].x * W, lms[i].y * H, 4, 0, Math.PI * 2);
-    ctx.fillStyle = '#00ff88'; ctx.fill();
-    ctx.strokeStyle = '#003322'; ctx.lineWidth = 1; ctx.stroke();
-  }
+
+  // 손가락 오버레이 (왼손=하늘색, 오른손=주황색)
+  drawHandOverlay(ctx, results.leftHandLandmarks,  W, H, '#44ddff');
+  drawHandOverlay(ctx, results.rightHandLandmarks, W, H, '#ffaa44');
 }
 
 // ─────────────────────────────────────────────
