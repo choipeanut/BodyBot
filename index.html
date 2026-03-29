@@ -665,37 +665,45 @@ function applyPoseToModel(lms) {
   // 두 랜드마크 사이의 방향 벡터
   const segDir = (a, b) => toV(b).sub(toV(a)).normalize();
 
-  // ── 힙 yaw (몸통 좌우 회전) ──
-  // 어깨축과 힙축의 XZ 평면 방향으로 몸이 얼마나 돌아있는지 계산
+  // ── 힙 전체 방향 (yaw + 좌우기울기 + 전후기울기 통합) ──
+  // 어깨 중점→힙 중점 벡터(bodyUp)와 좌어깨→우어깨 벡터(bodyRight)로
+  // 3D 회전 행렬을 구성해 몸 전체 방향을 캡처
   if (vis(11) && vis(12) && vis(23) && vis(24)) {
     const lSh = toV(11), rSh = toV(12);
     const lHp = toV(23), rHp = toV(24);
 
-    // 좌어깨 - 우어깨 벡터 (XZ 투영) — 정면 시: +X 방향
-    const shLat = new THREE.Vector3(lSh.x - rSh.x, 0, lSh.z - rSh.z);
-    const hpLat = new THREE.Vector3(lHp.x - rHp.x, 0, lHp.z - rHp.z);
+    const shoulderMid = lSh.clone().add(rSh).multiplyScalar(0.5);
+    const hipMid      = lHp.clone().add(rHp).multiplyScalar(0.5);
 
-    // 두 벡터 평균으로 안정화
-    const lat = shLat.add(hpLat).normalize();
-    if (lat.lengthSq() > 0.01) {
-      // 정면 기준(+X) 대비 회전각. 미러뷰이므로 부호 반전
-      const yaw = -Math.atan2(lat.z, lat.x);
+    // 몸의 위 방향 (힙→어깨)
+    const bodyUp    = shoulderMid.clone().sub(hipMid).normalize();
+    // 몸의 오른쪽 방향: lSh-rSh → 정면 기준 +X (미러 좌표계)
+    const bodyRight = lSh.clone().sub(rSh).normalize();
+
+    // 앞 방향 = right × up → 정면 기준 +Z
+    const bodyFwd        = new THREE.Vector3().crossVectors(bodyRight, bodyUp).normalize();
+    // 오른쪽 재정규화: up × fwd → +X
+    const bodyRightOrtho = new THREE.Vector3().crossVectors(bodyUp, bodyFwd).normalize();
+
+    if (bodyFwd.lengthSq() > 0.01 && bodyRightOrtho.lengthSq() > 0.01) {
+      // 3축으로 회전 행렬 구성 → 쿼터니언 추출
+      const mat    = new THREE.Matrix4().makeBasis(bodyRightOrtho, bodyUp, bodyFwd);
+      const worldQ = new THREE.Quaternion().setFromRotationMatrix(mat);
 
       const hipBone = bones[BONE_MAP.hips];
       if (hipBone) {
         const parentWorldQ = new THREE.Quaternion();
         if (hipBone.parent) hipBone.parent.getWorldQuaternion(parentWorldQ);
-        // 월드 Y축을 부모 로컬로 변환 후 그 축으로 회전
-        const localY = new THREE.Vector3(0, 1, 0).applyQuaternion(parentWorldQ.clone().invert()).normalize();
-        const deltaQ  = new THREE.Quaternion().setFromAxisAngle(localY, yaw);
-        const rd = restData[BONE_MAP.hips];
-        const finalQ = deltaQ.clone().multiply(rd ? rd.restQ : new THREE.Quaternion());
-        hipBone.quaternion.slerp(finalQ, 1.0 - smoothing);
+        const localQ = worldQ.clone().premultiply(parentWorldQ.clone().invert());
+        hipBone.quaternion.slerp(localQ, 1.0 - smoothing);
       }
+
+      // 힙 갱신 직후 월드 행렬 업데이트 → 척추/팔/다리가 새 힙 방향 기준으로 계산됨
+      character.updateMatrixWorld(true);
     }
   }
 
-  // ── 척추 (기울기) ──
+  // ── 척추 (상체 상대 기울기: 힙 대비 어깨 방향) ──
   if (vis(11) && vis(12) && vis(23) && vis(24)) {
     const shoulderMid = toV(11).add(toV(12)).multiplyScalar(0.5);
     const hipMid      = toV(23).add(toV(24)).multiplyScalar(0.5);
@@ -807,8 +815,8 @@ function onPoseResults(results) {
   drawLandmarks(results);
   if (!results.poseLandmarks) { setStatus('포즈 감지 안됨', false); return; }
   setStatus('실시간 감지 중', true);
-  // worldLandmarks 가 있으면 더 정확한 3D 좌표 사용
-  applyPoseToModel(results.poseWorldLandmarks || results.poseLandmarks);
+  // poseLandmarks 사용 (x,y ∈[0,1], z 상대깊이) — worldLandmarks는 미터단위라 변환 불일치
+  applyPoseToModel(results.poseLandmarks);
 }
 
 function setStatus(msg, active) {
