@@ -377,8 +377,8 @@ function initThree() {
   panel.appendChild(renderer.domElement);
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0a0a1a);
-  scene.fog = new THREE.FogExp2(0x0a0a1a, 0.025);
+  scene.background = new THREE.Color(0x2a2a3a);
+  scene.fog = new THREE.FogExp2(0x2a2a3a, 0.02);
 
   camera = new THREE.PerspectiveCamera(60, panel.clientWidth / panel.clientHeight, 0.1, 100);
   camera.position.set(0, 1.4, 3.5);
@@ -410,12 +410,12 @@ function initThree() {
   // 바닥
   const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(20, 20),
-    new THREE.MeshStandardMaterial({ color: 0x050510, roughness: 0.9 })
+    new THREE.MeshStandardMaterial({ color: 0x1a1a2e, roughness: 0.9 })
   );
   floor.rotation.x = -Math.PI / 2;
   floor.receiveShadow = true;
   scene.add(floor);
-  const grid = new THREE.GridHelper(20, 40, 0x111133, 0x111133);
+  const grid = new THREE.GridHelper(20, 40, 0x3a3a5a, 0x3a3a5a);
   grid.material.transparent = true;
   grid.material.opacity = 0.6;
   scene.add(grid);
@@ -987,7 +987,7 @@ document.getElementById('char-scale').addEventListener('input', function() {
 });
 
 window.onBgChange = val => {
-  const c = val === 'light' ? 0xdde8ff : 0x0a0a1a;
+  const c = val === 'light' ? 0xdde8ff : 0x2a2a3a;
   scene.background = new THREE.Color(c);
   scene.fog = new THREE.FogExp2(c, 0.025);
 };
