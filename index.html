@@ -10,7 +10,6 @@
     --neon: #00ff88;
     --neon-dim: #00cc66;
     --bg: #0a0a1a;
-    --bg2: #0f0f2a;
     --panel: #12122a;
     --border: #1e1e4a;
     --text: #e0e0ff;
@@ -25,8 +24,6 @@
     flex-direction: column;
     overflow: hidden;
   }
-
-  /* HEADER */
   #header {
     display: flex;
     align-items: center;
@@ -35,216 +32,103 @@
     background: var(--panel);
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
-    z-index: 10;
   }
-  #header h1 {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--neon);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
+  #header h1 { font-size: 1.2rem; font-weight: 700; color: var(--neon); letter-spacing: 2px; text-transform: uppercase; }
   #status-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: #555;
-    transition: background 0.3s;
-    box-shadow: 0 0 0px transparent;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #555; transition: background 0.3s;
   }
   #status-dot.active {
-    background: var(--neon);
-    box-shadow: 0 0 8px var(--neon);
+    background: var(--neon); box-shadow: 0 0 8px var(--neon);
     animation: pulse 1.5s infinite;
   }
-  @keyframes pulse {
-    0%,100% { box-shadow: 0 0 4px var(--neon); }
-    50% { box-shadow: 0 0 14px var(--neon); }
-  }
-  #status-text {
-    font-size: 0.8rem;
-    color: var(--text-dim);
-  }
-  #fps-display {
-    margin-left: auto;
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    font-family: monospace;
-  }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 4px var(--neon); } 50% { box-shadow: 0 0 14px var(--neon); } }
+  #status-text { font-size: 0.8rem; color: var(--text-dim); }
+  #fps-display { margin-left: auto; font-size: 0.75rem; color: var(--text-dim); font-family: monospace; }
 
-  /* MAIN AREA */
-  #main {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-    min-height: 0;
-  }
+  #main { display: flex; flex: 1; overflow: hidden; min-height: 0; }
 
-  /* WEBCAM PANEL */
   #webcam-panel {
-    width: 30%;
-    min-width: 220px;
-    max-width: 380px;
-    position: relative;
-    background: #000;
+    width: 30%; min-width: 220px; max-width: 380px;
+    position: relative; background: #000;
     border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
+    display: flex; flex-direction: column;
   }
   #webcam-label {
-    position: absolute;
-    top: 8px; left: 8px;
-    font-size: 0.7rem;
-    color: var(--text-dim);
-    background: rgba(0,0,0,0.6);
-    padding: 2px 8px;
-    border-radius: 4px;
-    z-index: 2;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    position: absolute; top: 8px; left: 8px;
+    font-size: 0.7rem; color: var(--text-dim);
+    background: rgba(0,0,0,0.6); padding: 2px 8px;
+    border-radius: 4px; z-index: 2;
+    letter-spacing: 1px; text-transform: uppercase;
   }
-  #video-container {
-    position: relative;
-    flex: 1;
-    overflow: hidden;
-  }
+  #video-container { position: relative; flex: 1; overflow: hidden; }
   #input_video {
-    position: absolute;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    opacity: 0.7;
-    transform: scaleX(-1);
+    position: absolute; width: 100%; height: 100%;
+    object-fit: cover; opacity: 0.7; transform: scaleX(-1);
   }
   #overlay_canvas {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    transform: scaleX(-1);
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%; transform: scaleX(-1);
   }
 
-  /* 3D PANEL */
-  #threejs-panel {
-    flex: 1;
-    position: relative;
-    background: var(--bg);
-    overflow: hidden;
-  }
-  #threejs-panel canvas {
-    display: block;
-    width: 100% !important;
-    height: 100% !important;
-  }
+  #threejs-panel { flex: 1; position: relative; background: var(--bg); overflow: hidden; }
+  #threejs-panel canvas { display: block; width: 100% !important; height: 100% !important; }
+
   #model-loading {
-    position: absolute;
-    top: 50%; left: 50%;
+    position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    text-align: center;
-    color: var(--text-dim);
+    text-align: center; color: var(--text-dim);
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
   }
   #model-loading .spinner {
     width: 40px; height: 40px;
-    border: 3px solid var(--border);
-    border-top-color: var(--neon);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto 12px;
+    border: 3px solid var(--border); border-top-color: var(--neon);
+    border-radius: 50%; animation: spin 0.8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* CONTROLS */
   #controls {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 10px 20px;
-    background: var(--panel);
-    border-top: 1px solid var(--border);
-    flex-shrink: 0;
-    flex-wrap: wrap;
+    display: flex; align-items: center; gap: 20px;
+    padding: 10px 20px; background: var(--panel);
+    border-top: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap;
   }
-  .ctrl-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .ctrl-label {
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    white-space: nowrap;
-  }
+  .ctrl-group { display: flex; align-items: center; gap: 8px; }
+  .ctrl-label { font-size: 0.75rem; color: var(--text-dim); white-space: nowrap; }
   input[type=range] {
-    -webkit-appearance: none;
-    width: 100px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    outline: none;
+    -webkit-appearance: none; width: 100px; height: 4px;
+    background: var(--border); border-radius: 2px; outline: none;
   }
   input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    background: var(--neon);
-    cursor: pointer;
-    box-shadow: 0 0 6px var(--neon);
+    -webkit-appearance: none; width: 14px; height: 14px;
+    border-radius: 50%; background: var(--neon);
+    cursor: pointer; box-shadow: 0 0 6px var(--neon);
   }
   button.ctrl-btn {
-    background: var(--border);
-    color: var(--text);
-    border: 1px solid var(--border);
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s;
+    background: var(--border); color: var(--text);
+    border: 1px solid var(--border); padding: 4px 12px;
+    border-radius: 4px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;
   }
-  button.ctrl-btn:hover {
-    background: var(--neon-dim);
-    color: #000;
-    border-color: var(--neon);
-  }
+  button.ctrl-btn:hover { background: var(--neon-dim); color: #000; border-color: var(--neon); }
   select.ctrl-select {
-    background: var(--border);
-    color: var(--text);
-    border: 1px solid #2a2a5a;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    cursor: pointer;
-    outline: none;
+    background: var(--border); color: var(--text);
+    border: 1px solid #2a2a5a; padding: 4px 8px;
+    border-radius: 4px; font-size: 0.75rem; cursor: pointer; outline: none;
   }
-  #webcam-btn {
-    background: var(--neon-dim);
-    color: #000;
-    font-weight: 700;
-  }
-  #webcam-btn:hover {
-    background: var(--neon);
-  }
-  .ctrl-val {
-    font-size: 0.7rem;
-    color: var(--neon);
-    font-family: monospace;
-    min-width: 28px;
-  }
+  #webcam-btn { background: var(--neon-dim); color: #000; font-weight: 700; }
+  #webcam-btn:hover { background: var(--neon); }
+  .ctrl-val { font-size: 0.7rem; color: var(--neon); font-family: monospace; min-width: 28px; }
 
-  /* OVERLAY MESSAGES */
   #cam-message {
-    position: absolute;
-    top: 50%; left: 50%;
+    position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    text-align: center;
-    color: var(--text-dim);
-    font-size: 0.8rem;
-    line-height: 1.6;
-    pointer-events: none;
-    z-index: 5;
+    text-align: center; color: var(--text-dim);
+    font-size: 0.8rem; line-height: 1.6; z-index: 5;
   }
   #cam-message .icon { font-size: 2rem; margin-bottom: 8px; }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div id="header">
   <h1>MotionMirror</h1>
   <div id="status-dot"></div>
@@ -252,10 +136,7 @@
   <span id="fps-display">-- fps</span>
 </div>
 
-<!-- MAIN -->
 <div id="main">
-
-  <!-- WEBCAM PANEL -->
   <div id="webcam-panel">
     <div id="webcam-label">웹캠 뷰</div>
     <div id="video-container">
@@ -267,25 +148,22 @@
       </div>
     </div>
   </div>
-
-  <!-- 3D PANEL -->
   <div id="threejs-panel">
     <div id="model-loading">
       <div class="spinner"></div>
-      <div>3D 씬 초기화 중...</div>
+      <div>character.glb 로드 중...</div>
     </div>
   </div>
 </div>
 
-<!-- CONTROLS -->
 <div id="controls">
   <div class="ctrl-group">
     <button class="ctrl-btn" id="webcam-btn" onclick="startWebcam()">▶ 웹캠 시작</button>
   </div>
   <div class="ctrl-group">
     <span class="ctrl-label">스무딩</span>
-    <input type="range" id="smoothing" min="0" max="0.95" step="0.05" value="0.7">
-    <span class="ctrl-val" id="smoothing-val">0.7</span>
+    <input type="range" id="smoothing" min="0" max="0.95" step="0.05" value="0.65">
+    <span class="ctrl-val" id="smoothing-val">0.65</span>
   </div>
   <div class="ctrl-group">
     <span class="ctrl-label">캐릭터 크기</span>
@@ -295,8 +173,8 @@
   <div class="ctrl-group">
     <span class="ctrl-label">모델</span>
     <select class="ctrl-select" id="model-select" onchange="onModelChange(this.value)">
+      <option value="custom" selected>character.glb</option>
       <option value="fallback">박스맨 (기본)</option>
-      <option value="custom">character.glb</option>
     </select>
   </div>
   <div class="ctrl-group">
@@ -304,14 +182,13 @@
   </div>
   <div class="ctrl-group">
     <span class="ctrl-label">배경</span>
-    <select class="ctrl-select" id="bg-select" onchange="onBgChange(this.value)">
+    <select class="ctrl-select" onchange="onBgChange(this.value)">
       <option value="dark">어둡게</option>
       <option value="light">밝게</option>
     </select>
   </div>
 </div>
 
-<!-- THREE.JS & MEDIAPIPE CDN -->
 <script async src="https://cdn.jsdelivr.net/npm/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
 <script type="importmap">
 {
@@ -328,9 +205,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // ─────────────────────────────────────────────
-// BONE MAP (Mixamo → MediaPipe segment)
+// 뼈대 이름 매핑 (Mixamo 기준)
 // ─────────────────────────────────────────────
 const BONE_MAP = {
+  hips:          'mixamorigHips',
+  spine:         'mixamorigSpine',
+  neck:          'mixamorigNeck',
   leftUpperArm:  'mixamorigLeftArm',
   leftLowerArm:  'mixamorigLeftForeArm',
   rightUpperArm: 'mixamorigRightArm',
@@ -339,26 +219,21 @@ const BONE_MAP = {
   leftLowerLeg:  'mixamorigLeftLeg',
   rightUpperLeg: 'mixamorigRightUpLeg',
   rightLowerLeg: 'mixamorigRightLeg',
-  spine:         'mixamorigSpine',
-  neck:          'mixamorigNeck',
-  hips:          'mixamorigHips',
 };
 
 // ─────────────────────────────────────────────
-// STATE
+// 전역 상태
 // ─────────────────────────────────────────────
-let scene, camera, renderer, controls, clock;
-let character = null;      // THREE.Group with .bones map
-let bones = {};            // name → THREE.Bone
-let smoothing = 0.7;
-let lastLandmarks = null;
-let animFrameId = null;
-let poseDetector = null;
-let webcamRunning = false;
+let scene, camera, renderer, orbitControls, clock;
+let character = null;
+let bones = {};
+let restData = {};   // boneName → { restQ, restDir }
+let smoothing = 0.65;
 let frameCount = 0, lastFpsTime = 0;
+let poseDetector = null;
 
 // ─────────────────────────────────────────────
-// THREE.JS INIT
+// THREE.JS 씬 초기화
 // ─────────────────────────────────────────────
 function initThree() {
   const panel = document.getElementById('threejs-panel');
@@ -372,50 +247,43 @@ function initThree() {
 
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0a0a1a);
-  scene.fog = new THREE.FogExp2(0x0a0a1a, 0.03);
+  scene.fog = new THREE.FogExp2(0x0a0a1a, 0.025);
 
   camera = new THREE.PerspectiveCamera(60, panel.clientWidth / panel.clientHeight, 0.1, 100);
-  camera.position.set(0, 1.5, 4);
-  camera.lookAt(0, 1, 0);
+  camera.position.set(0, 1.4, 3.5);
+  camera.lookAt(0, 0.9, 0);
 
-  // Controls
-  controls = new OrbitControls(camera, renderer.domElement);
-  controls.target.set(0, 1, 0);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.08;
-  controls.minDistance = 1.5;
-  controls.maxDistance = 12;
-  controls.update();
+  orbitControls = new OrbitControls(camera, renderer.domElement);
+  orbitControls.target.set(0, 0.9, 0);
+  orbitControls.enableDamping = true;
+  orbitControls.dampingFactor = 0.08;
+  orbitControls.minDistance = 1;
+  orbitControls.maxDistance = 12;
+  orbitControls.update();
 
-  // Lighting
-  const ambient = new THREE.AmbientLight(0xffffff, 0.4);
-  scene.add(ambient);
-
-  const hemi = new THREE.HemisphereLight(0x8888ff, 0x222244, 0.6);
+  // 조명
+  scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+  const hemi = new THREE.HemisphereLight(0x8888ff, 0x222244, 0.5);
   scene.add(hemi);
-
-  const dir1 = new THREE.DirectionalLight(0xffffff, 0.8);
+  const dir1 = new THREE.DirectionalLight(0xffffff, 0.9);
   dir1.position.set(2, 4, 3);
   dir1.castShadow = true;
   dir1.shadow.mapSize.set(1024, 1024);
-  dir1.shadow.camera.near = 0.5;
-  dir1.shadow.camera.far = 20;
   dir1.shadow.camera.left = dir1.shadow.camera.bottom = -4;
   dir1.shadow.camera.right = dir1.shadow.camera.top = 4;
   scene.add(dir1);
-
   const dir2 = new THREE.DirectionalLight(0x6644ff, 0.3);
   dir2.position.set(-3, 2, -2);
   scene.add(dir2);
 
-  // Floor
-  const floorGeo = new THREE.PlaneGeometry(20, 20);
-  const floorMat = new THREE.MeshStandardMaterial({ color: 0x050510, roughness: 0.9 });
-  const floor = new THREE.Mesh(floorGeo, floorMat);
+  // 바닥
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(20, 20),
+    new THREE.MeshStandardMaterial({ color: 0x050510, roughness: 0.9 })
+  );
   floor.rotation.x = -Math.PI / 2;
   floor.receiveShadow = true;
   scene.add(floor);
-
   const grid = new THREE.GridHelper(20, 40, 0x111133, 0x111133);
   grid.material.transparent = true;
   grid.material.opacity = 0.6;
@@ -423,35 +291,14 @@ function initThree() {
 
   clock = new THREE.Clock();
 
-  // Load fallback by default
-  buildFallbackCharacter();
-  hideLoading();
+  // character.glb 우선 로드, 실패 시 박스맨
+  loadGLTFCharacter('./models/character.glb');
 
-  startRenderLoop();
-
-  window.addEventListener('resize', onResize);
-}
-
-function hideLoading() {
-  const el = document.getElementById('model-loading');
-  if (el) el.style.display = 'none';
-}
-
-function onResize() {
-  const panel = document.getElementById('threejs-panel');
-  camera.aspect = panel.clientWidth / panel.clientHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(panel.clientWidth, panel.clientHeight);
-}
-
-function startRenderLoop() {
-  function loop() {
-    animFrameId = requestAnimationFrame(loop);
-    const delta = clock.getDelta();
-    controls.update();
+  // 렌더 루프
+  (function loop() {
+    requestAnimationFrame(loop);
+    orbitControls.update();
     renderer.render(scene, camera);
-
-    // FPS counter
     frameCount++;
     const now = performance.now();
     if (now - lastFpsTime > 1000) {
@@ -459,262 +306,263 @@ function startRenderLoop() {
       frameCount = 0;
       lastFpsTime = now;
     }
-  }
-  loop();
-}
+  })();
 
-// ─────────────────────────────────────────────
-// FALLBACK BOX MAN
-// ─────────────────────────────────────────────
-function buildFallbackCharacter() {
-  if (character) scene.remove(character);
-  bones = {};
-  character = new THREE.Group();
-
-  const mat = new THREE.MeshStandardMaterial({ color: 0x00ff88, roughness: 0.5, metalness: 0.1 });
-  const matDark = new THREE.MeshStandardMaterial({ color: 0x008844, roughness: 0.5 });
-
-  // Helper: make a box mesh
-  function box(w, h, d, m) {
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m || mat);
-    mesh.castShadow = true;
-    return mesh;
-  }
-
-  // We build a bone hierarchy with SkinnedMesh for each segment
-  // Actually, for simplicity, build with plain Object3D hierarchy
-  // and manually control via .rotation
-
-  // Root bone (hips)
-  const rootBone = new THREE.Bone();
-  rootBone.name = 'mixamorigHips';
-  rootBone.position.set(0, 0.95, 0);
-
-  // Spine
-  const spineBone = new THREE.Bone();
-  spineBone.name = 'mixamorigSpine';
-  spineBone.position.set(0, 0.22, 0);
-  rootBone.add(spineBone);
-
-  // Spine1 (upper chest)
-  const spine1Bone = new THREE.Bone();
-  spine1Bone.name = 'mixamorigSpine1';
-  spine1Bone.position.set(0, 0.2, 0);
-  spineBone.add(spine1Bone);
-
-  // Neck
-  const neckBone = new THREE.Bone();
-  neckBone.name = 'mixamorigNeck';
-  neckBone.position.set(0, 0.22, 0);
-  spine1Bone.add(neckBone);
-
-  // Head
-  const headBone = new THREE.Bone();
-  headBone.name = 'mixamorigHead';
-  headBone.position.set(0, 0.12, 0);
-  neckBone.add(headBone);
-
-  // Left shoulder
-  const lShoulderBone = new THREE.Bone();
-  lShoulderBone.name = 'mixamorigLeftShoulder';
-  lShoulderBone.position.set(0.18, 0.18, 0);
-  spine1Bone.add(lShoulderBone);
-
-  // Left upper arm
-  const lArmBone = new THREE.Bone();
-  lArmBone.name = 'mixamorigLeftArm';
-  lArmBone.position.set(0.15, 0, 0);
-  lShoulderBone.add(lArmBone);
-
-  // Left forearm
-  const lForeArmBone = new THREE.Bone();
-  lForeArmBone.name = 'mixamorigLeftForeArm';
-  lForeArmBone.position.set(0.28, 0, 0);
-  lArmBone.add(lForeArmBone);
-
-  // Left hand
-  const lHandBone = new THREE.Bone();
-  lHandBone.name = 'mixamorigLeftHand';
-  lHandBone.position.set(0.25, 0, 0);
-  lForeArmBone.add(lHandBone);
-
-  // Right shoulder
-  const rShoulderBone = new THREE.Bone();
-  rShoulderBone.name = 'mixamorigRightShoulder';
-  rShoulderBone.position.set(-0.18, 0.18, 0);
-  spine1Bone.add(rShoulderBone);
-
-  // Right upper arm
-  const rArmBone = new THREE.Bone();
-  rArmBone.name = 'mixamorigRightArm';
-  rArmBone.position.set(-0.15, 0, 0);
-  rShoulderBone.add(rArmBone);
-
-  // Right forearm
-  const rForeArmBone = new THREE.Bone();
-  rForeArmBone.name = 'mixamorigRightForeArm';
-  rForeArmBone.position.set(-0.28, 0, 0);
-  rArmBone.add(rForeArmBone);
-
-  // Right hand
-  const rHandBone = new THREE.Bone();
-  rHandBone.name = 'mixamorigRightHand';
-  rHandBone.position.set(-0.25, 0, 0);
-  rForeArmBone.add(rHandBone);
-
-  // Left hip
-  const lUpLegBone = new THREE.Bone();
-  lUpLegBone.name = 'mixamorigLeftUpLeg';
-  lUpLegBone.position.set(0.1, -0.1, 0);
-  rootBone.add(lUpLegBone);
-
-  // Left knee
-  const lLegBone = new THREE.Bone();
-  lLegBone.name = 'mixamorigLeftLeg';
-  lLegBone.position.set(0, -0.42, 0);
-  lUpLegBone.add(lLegBone);
-
-  // Left ankle
-  const lFootBone = new THREE.Bone();
-  lFootBone.name = 'mixamorigLeftFoot';
-  lFootBone.position.set(0, -0.42, 0);
-  lLegBone.add(lFootBone);
-
-  // Right hip
-  const rUpLegBone = new THREE.Bone();
-  rUpLegBone.name = 'mixamorigRightUpLeg';
-  rUpLegBone.position.set(-0.1, -0.1, 0);
-  rootBone.add(rUpLegBone);
-
-  // Right knee
-  const rLegBone = new THREE.Bone();
-  rLegBone.name = 'mixamorigRightLeg';
-  rLegBone.position.set(0, -0.42, 0);
-  rUpLegBone.add(rLegBone);
-
-  // Right ankle
-  const rFootBone = new THREE.Bone();
-  rFootBone.name = 'mixamorigRightFoot';
-  rFootBone.position.set(0, -0.42, 0);
-  rLegBone.add(rFootBone);
-
-  // Build skeleton
-  const skeleton = new THREE.Skeleton([
-    rootBone, spineBone, spine1Bone, neckBone, headBone,
-    lShoulderBone, lArmBone, lForeArmBone, lHandBone,
-    rShoulderBone, rArmBone, rForeArmBone, rHandBone,
-    lUpLegBone, lLegBone, lFootBone,
-    rUpLegBone, rLegBone, rFootBone,
-  ]);
-
-  // Build visual geometry on each bone using a helper group
-  function addBoxOnBone(bone, w, h, d, offsetY, m) {
-    const mesh = box(w, h, d, m);
-    mesh.position.y = offsetY;
-    mesh.castShadow = true;
-    bone.add(mesh);
-  }
-
-  // Head
-  addBoxOnBone(headBone, 0.22, 0.22, 0.22, 0.11, mat);
-  // Neck
-  addBoxOnBone(neckBone, 0.1, 0.12, 0.1, 0.06, matDark);
-  // Torso (on spine1)
-  addBoxOnBone(spine1Bone, 0.36, 0.40, 0.18, 0.0, matDark);
-  // Hips/pelvis
-  addBoxOnBone(rootBone, 0.32, 0.20, 0.18, 0.0, matDark);
-
-  // Arms
-  addBoxOnBone(lArmBone, 0.26, 0.1, 0.1, 0, mat);
-  addBoxOnBone(lForeArmBone, 0.23, 0.09, 0.09, 0, mat);
-  addBoxOnBone(lHandBone, 0.1, 0.14, 0.06, 0, mat);
-  addBoxOnBone(rArmBone, 0.26, 0.1, 0.1, 0, mat);
-  addBoxOnBone(rForeArmBone, 0.23, 0.09, 0.09, 0, mat);
-  addBoxOnBone(rHandBone, 0.1, 0.14, 0.06, 0, mat);
-
-  // Legs
-  addBoxOnBone(lUpLegBone, 0.14, 0.40, 0.14, -0.20, mat);
-  addBoxOnBone(lLegBone, 0.12, 0.40, 0.12, -0.20, mat);
-  addBoxOnBone(lFootBone, 0.12, 0.08, 0.22, 0, matDark);
-  addBoxOnBone(rUpLegBone, 0.14, 0.40, 0.14, -0.20, mat);
-  addBoxOnBone(rLegBone, 0.12, 0.40, 0.12, -0.20, mat);
-  addBoxOnBone(rFootBone, 0.12, 0.08, 0.22, 0, matDark);
-
-  character.add(rootBone);
-  scene.add(character);
-
-  // Index bones by name
-  collectBones(rootBone);
-
-  const scale = parseFloat(document.getElementById('char-scale').value);
-  character.scale.setScalar(scale);
-}
-
-function collectBones(bone) {
-  bones[bone.name] = bone;
-  for (const child of bone.children) {
-    if (child.isBone) collectBones(child);
-  }
-}
-
-function collectBonesFromMesh(root) {
-  bones = {};
-  root.traverse(obj => {
-    if (obj.isBone) bones[obj.name] = obj;
+  window.addEventListener('resize', () => {
+    camera.aspect = panel.clientWidth / panel.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(panel.clientWidth, panel.clientHeight);
   });
 }
 
 // ─────────────────────────────────────────────
-// GLTF LOADER
+// GLTF 로더
 // ─────────────────────────────────────────────
-const loader = new GLTFLoader();
+const gltfLoader = new GLTFLoader();
 
 function loadGLTFCharacter(url) {
-  document.getElementById('model-loading').style.display = 'flex';
-  document.getElementById('model-loading').style.flexDirection = 'column';
-  document.getElementById('model-loading').style.alignItems = 'center';
+  const loadingEl = document.getElementById('model-loading');
+  loadingEl.style.display = 'flex';
+  loadingEl.querySelector('div:last-child').textContent = 'character.glb 로드 중...';
 
-  loader.load(url, (gltf) => {
-    if (character) scene.remove(character);
-    bones = {};
-    character = gltf.scene;
-    character.traverse(obj => {
-      if (obj.isMesh) {
-        obj.castShadow = true;
-        obj.receiveShadow = true;
-      }
+  gltfLoader.load(url, (gltf) => {
+    replaceCharacter(gltf.scene);
+    gltf.scene.traverse(obj => {
+      if (obj.isMesh) { obj.castShadow = true; obj.receiveShadow = true; }
     });
-    const scale = parseFloat(document.getElementById('char-scale').value);
-    character.scale.setScalar(scale);
-    scene.add(character);
-    collectBonesFromMesh(character);
-    hideLoading();
-    console.log('GLTF loaded. Bones:', Object.keys(bones));
+    loadingEl.style.display = 'none';
+    console.log('[MotionMirror] GLTF 로드 완료. 뼈대:', Object.keys(bones).filter(n => n.startsWith('mixamorig')));
   }, undefined, (err) => {
-    console.warn('GLTF load failed, using fallback:', err);
+    console.warn('[MotionMirror] GLTF 로드 실패 → 박스맨 사용:', err.message);
     buildFallbackCharacter();
-    hideLoading();
+    loadingEl.style.display = 'none';
     document.getElementById('model-select').value = 'fallback';
   });
 }
 
+function replaceCharacter(newGroup) {
+  if (character) scene.remove(character);
+  bones = {};
+  character = newGroup;
+  const s = parseFloat(document.getElementById('char-scale').value);
+  character.scale.setScalar(s);
+  scene.add(character);
+  character.updateMatrixWorld(true);
+  character.traverse(obj => { if (obj.isBone) bones[obj.name] = obj; });
+  storeRestData();
+}
+
 // ─────────────────────────────────────────────
-// MEDIAPIPE POSE
+// 폴백 박스맨 생성
 // ─────────────────────────────────────────────
-async function initPose() {
-  // Load MediaPipe via CDN
-  return new Promise((resolve, reject) => {
-    const script1 = document.createElement('script');
-    script1.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js';
-    script1.onload = () => {
-      const script2 = document.createElement('script');
-      script2.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js';
-      script2.onload = () => resolve();
-      script2.onerror = reject;
-      document.head.appendChild(script2);
+function buildFallbackCharacter() {
+  const mat  = new THREE.MeshStandardMaterial({ color: 0x00ff88, roughness: 0.5 });
+  const matD = new THREE.MeshStandardMaterial({ color: 0x007744, roughness: 0.5 });
+
+  function mkBone(name, px, py, pz) {
+    const b = new THREE.Bone();
+    b.name = name;
+    b.position.set(px, py, pz);
+    return b;
+  }
+  function addBox(bone, w, h, d, ox, oy, oz, m) {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m || mat);
+    mesh.position.set(ox, oy, oz);
+    mesh.castShadow = true;
+    bone.add(mesh);
+  }
+
+  // 뼈대 계층
+  const hips    = mkBone('mixamorigHips',         0,    0.95, 0);
+  const spine   = mkBone('mixamorigSpine',        0,    0.22, 0);
+  const spine1  = mkBone('mixamorigSpine1',       0,    0.20, 0);
+  const neck    = mkBone('mixamorigNeck',         0,    0.22, 0);
+  const head    = mkBone('mixamorigHead',         0,    0.12, 0);
+
+  const lSho   = mkBone('mixamorigLeftShoulder',  0.18, 0.18, 0);
+  const lArm   = mkBone('mixamorigLeftArm',       0.15, 0,    0);
+  const lFore  = mkBone('mixamorigLeftForeArm',   0.28, 0,    0);
+  const lHand  = mkBone('mixamorigLeftHand',      0.24, 0,    0);
+
+  const rSho   = mkBone('mixamorigRightShoulder',-0.18, 0.18, 0);
+  const rArm   = mkBone('mixamorigRightArm',     -0.15, 0,    0);
+  const rFore  = mkBone('mixamorigRightForeArm', -0.28, 0,    0);
+  const rHand  = mkBone('mixamorigRightHand',    -0.24, 0,    0);
+
+  const lUpLeg = mkBone('mixamorigLeftUpLeg',     0.10,-0.10, 0);
+  const lLeg   = mkBone('mixamorigLeftLeg',       0,   -0.42, 0);
+  const lFoot  = mkBone('mixamorigLeftFoot',      0,   -0.42, 0);
+
+  const rUpLeg = mkBone('mixamorigRightUpLeg',   -0.10,-0.10, 0);
+  const rLeg   = mkBone('mixamorigRightLeg',      0,   -0.42, 0);
+  const rFoot  = mkBone('mixamorigRightFoot',     0,   -0.42, 0);
+
+  // 계층 연결
+  hips.add(spine);
+  spine.add(spine1);
+  spine1.add(neck, lSho, rSho);
+  neck.add(head);
+  lSho.add(lArm); lArm.add(lFore); lFore.add(lHand);
+  rSho.add(rArm); rArm.add(rFore); rFore.add(rHand);
+  hips.add(lUpLeg); lUpLeg.add(lLeg); lLeg.add(lFoot);
+  hips.add(rUpLeg); rUpLeg.add(rLeg); rLeg.add(rFoot);
+
+  // 시각 메시
+  addBox(head,   0.22, 0.22, 0.22, 0,    0.11, 0);
+  addBox(neck,   0.10, 0.12, 0.10, 0,    0.06, 0, matD);
+  addBox(spine1, 0.36, 0.40, 0.18, 0,    0,    0, matD);
+  addBox(hips,   0.32, 0.20, 0.18, 0,    0,    0, matD);
+  addBox(lArm,   0.26, 0.10, 0.10, 0.13, 0,    0);
+  addBox(lFore,  0.23, 0.09, 0.09, 0.11, 0,    0);
+  addBox(lHand,  0.10, 0.14, 0.06, 0.05, 0,    0);
+  addBox(rArm,   0.26, 0.10, 0.10,-0.13, 0,    0);
+  addBox(rFore,  0.23, 0.09, 0.09,-0.11, 0,    0);
+  addBox(rHand,  0.10, 0.14, 0.06,-0.05, 0,    0);
+  addBox(lUpLeg, 0.14, 0.40, 0.14, 0,   -0.20, 0);
+  addBox(lLeg,   0.12, 0.40, 0.12, 0,   -0.20, 0);
+  addBox(lFoot,  0.12, 0.08, 0.22, 0,    0,    0.05, matD);
+  addBox(rUpLeg, 0.14, 0.40, 0.14, 0,   -0.20, 0);
+  addBox(rLeg,   0.12, 0.40, 0.12, 0,   -0.20, 0);
+  addBox(rFoot,  0.12, 0.08, 0.22, 0,    0,    0.05, matD);
+
+  const group = new THREE.Group();
+  group.add(hips);
+  replaceCharacter(group);
+}
+
+// ─────────────────────────────────────────────
+// 레스트 포즈 저장
+// ─────────────────────────────────────────────
+function storeRestData() {
+  restData = {};
+  if (!character) return;
+  character.updateMatrixWorld(true);
+
+  for (const boneName of Object.values(BONE_MAP)) {
+    const bone = bones[boneName];
+    if (!bone) continue;
+
+    // 자식 본의 로컬 위치로부터 이 본이 향하는 방향을 구함
+    // child.position 은 이 bone의 로컬 공간 기준
+    // bone.quaternion 을 적용하면 부모 로컬 공간에서의 방향이 됨
+    const childBone = bone.children.find(c => c.isBone);
+    let restDir = new THREE.Vector3(0, 1, 0); // 기본값
+
+    if (childBone && childBone.position.lengthSq() > 1e-6) {
+      restDir = childBone.position.clone()
+        .applyQuaternion(bone.quaternion)
+        .normalize();
+    } else {
+      // 자식 본 없음 → 이 본의 부모 기준 위치 방향 사용
+      if (bone.position.lengthSq() > 1e-6) {
+        restDir = bone.position.clone().normalize();
+      }
+    }
+
+    restData[boneName] = {
+      restQ:   bone.quaternion.clone(),
+      restDir: restDir,
     };
-    script1.onerror = reject;
-    document.head.appendChild(script1);
+  }
+}
+
+// ─────────────────────────────────────────────
+// 본 방향 설정 (핵심 수정 함수)
+// ─────────────────────────────────────────────
+// worldDir: 이 본이 가리켜야 할 방향 (월드 공간)
+function setBoneDir(boneName, worldDir) {
+  const bone = bones[boneName];
+  const data = restData[boneName];
+  if (!bone || !data || worldDir.lengthSq() < 0.001) return;
+
+  // 1. 부모 본의 월드 쿼터니언 획득
+  const parentWorldQ = new THREE.Quaternion();
+  if (bone.parent) bone.parent.getWorldQuaternion(parentWorldQ);
+
+  // 2. 원하는 방향을 부모 로컬 공간으로 변환
+  const localTarget = worldDir.clone()
+    .applyQuaternion(parentWorldQ.clone().invert())
+    .normalize();
+
+  // 3. 레스트 방향 → 목표 방향 델타 쿼터니언 (부모 로컬 공간)
+  const deltaQ = new THREE.Quaternion().setFromUnitVectors(data.restDir, localTarget);
+
+  // 4. 최종 = delta * restQ
+  //    (부모 로컬 공간에서 델타 회전을 레스트 포즈 위에 적용)
+  const finalQ = deltaQ.clone().multiply(data.restQ);
+
+  // 5. 스무딩 보간
+  bone.quaternion.slerp(finalQ, 1.0 - smoothing);
+}
+
+// ─────────────────────────────────────────────
+// 포즈 적용
+// ─────────────────────────────────────────────
+function applyPoseToModel(lms) {
+  if (!character || !lms || Object.keys(restData).length === 0) return;
+
+  // 월드 행렬 갱신 (부모 본 쿼터니언을 올바르게 읽기 위함)
+  character.updateMatrixWorld(true);
+
+  // visibility 체크 (world landmarks 는 visibility 없을 수 있음)
+  const vis = i => (lms[i].visibility ?? 1) > 0.5;
+
+  // MediaPipe 좌표 → Three.js 월드 벡터
+  // poseLandmarks: x[0..1] 왼→오, y[0..1] 위→아래, z(상대 깊이)
+  // - x: 미러(selfie) 뷰이므로 뒤집지 않음 (landmark 11=사람 왼쪽 = 화면 오른쪽 = 캐릭터 왼쪽 +X)
+  // - y: 뒤집기 (화면 아래 = 월드 위쪽 반전)
+  // - z: 깊이 보정
+  const toV = i => new THREE.Vector3(
+     (lms[i].x - 0.5),
+    -(lms[i].y - 0.5),
+    -(lms[i].z ?? 0) * 0.5
+  );
+
+  // 두 랜드마크 사이의 방향 벡터
+  const segDir = (a, b) => toV(b).sub(toV(a)).normalize();
+
+  // ── 척추 ──
+  if (vis(11) && vis(12) && vis(23) && vis(24)) {
+    const shoulderMid = toV(11).add(toV(12)).multiplyScalar(0.5);
+    const hipMid      = toV(23).add(toV(24)).multiplyScalar(0.5);
+    setBoneDir(BONE_MAP.spine, shoulderMid.sub(hipMid));
+  }
+
+  // ── 목 ──
+  if (vis(0) && vis(11) && vis(12)) {
+    const shoulderMid = toV(11).add(toV(12)).multiplyScalar(0.5);
+    setBoneDir(BONE_MAP.neck, toV(0).sub(shoulderMid));
+  }
+
+  // ── 팔 ──
+  if (vis(11) && vis(13)) setBoneDir(BONE_MAP.leftUpperArm,  segDir(11, 13));
+  if (vis(13) && vis(15)) setBoneDir(BONE_MAP.leftLowerArm,  segDir(13, 15));
+  if (vis(12) && vis(14)) setBoneDir(BONE_MAP.rightUpperArm, segDir(12, 14));
+  if (vis(14) && vis(16)) setBoneDir(BONE_MAP.rightLowerArm, segDir(14, 16));
+
+  // ── 다리 ──
+  if (vis(23) && vis(25)) setBoneDir(BONE_MAP.leftUpperLeg,  segDir(23, 25));
+  if (vis(25) && vis(27)) setBoneDir(BONE_MAP.leftLowerLeg,  segDir(25, 27));
+  if (vis(24) && vis(26)) setBoneDir(BONE_MAP.rightUpperLeg, segDir(24, 26));
+  if (vis(26) && vis(28)) setBoneDir(BONE_MAP.rightLowerLeg, segDir(26, 28));
+}
+
+// ─────────────────────────────────────────────
+// MediaPipe 초기화
+// ─────────────────────────────────────────────
+function loadMediaPipeScripts() {
+  return new Promise((resolve, reject) => {
+    const s1 = document.createElement('script');
+    s1.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js';
+    s1.onload = () => {
+      const s2 = document.createElement('script');
+      s2.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js';
+      s2.onload = resolve;
+      s2.onerror = reject;
+      document.head.appendChild(s2);
+    };
+    s1.onerror = reject;
+    document.head.appendChild(s1);
   });
 }
 
@@ -724,115 +572,90 @@ async function startWebcam() {
   btn.textContent = '초기화 중...';
 
   try {
-    await initPose();
+    await loadMediaPipeScripts();
     const video = document.getElementById('input_video');
 
     poseDetector = new window.Pose({
-      locateFile: (file) =>
-        `https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/${file}`
+      locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/${f}`
     });
-
     poseDetector.setOptions({
       modelComplexity: 1,
       smoothLandmarks: true,
       enableSegmentation: false,
-      smoothSegmentation: false,
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5,
     });
-
     poseDetector.onResults(onPoseResults);
 
-    const cameraUtil = new window.Camera(video, {
-      onFrame: async () => {
-        await poseDetector.send({ image: video });
-      },
-      width: 640,
-      height: 480,
+    const cam = new window.Camera(video, {
+      onFrame: async () => { await poseDetector.send({ image: video }); },
+      width: 640, height: 480,
     });
-
-    await cameraUtil.start();
-    webcamRunning = true;
+    await cam.start();
 
     document.getElementById('cam-message').style.display = 'none';
-    btn.textContent = '● 감지 중';
-    btn.style.background = '#cc0044';
-    btn.style.color = '#fff';
+    btn.textContent = '■ 중지';
+    btn.style.cssText = 'background:#cc0044;color:#fff;font-weight:700';
     btn.onclick = stopWebcam;
     btn.disabled = false;
     setStatus('연결됨...', false);
 
   } catch (e) {
-    console.error('Webcam/Pose init failed:', e);
+    console.error(e);
     btn.disabled = false;
     btn.textContent = '▶ 웹캠 시작';
+    btn.style.cssText = '';
     setStatus('오류: ' + e.message, false);
     document.getElementById('cam-message').innerHTML =
-      '<div class="icon">⚠️</div><div>웹캠 오류: ' + e.message + '</div>';
+      `<div class="icon">⚠️</div><div>오류: ${e.message}</div>`;
   }
 }
-
-// Expose to onclick
 window.startWebcam = startWebcam;
 
 function stopWebcam() {
-  webcamRunning = false;
   if (poseDetector) { poseDetector.close(); poseDetector = null; }
   const video = document.getElementById('input_video');
-  if (video.srcObject) {
-    video.srcObject.getTracks().forEach(t => t.stop());
-    video.srcObject = null;
-  }
+  if (video.srcObject) { video.srcObject.getTracks().forEach(t => t.stop()); video.srcObject = null; }
   const btn = document.getElementById('webcam-btn');
   btn.textContent = '▶ 웹캠 시작';
-  btn.style.background = '';
-  btn.style.color = '';
+  btn.style.cssText = '';
   btn.onclick = startWebcam;
   setStatus('중지됨', false);
-  document.getElementById('status-dot').classList.remove('active');
   document.getElementById('cam-message').style.display = '';
   document.getElementById('cam-message').innerHTML =
     '<div class="icon">📷</div><div>웹캠 시작 버튼을 눌러주세요</div>';
 }
 
-function setStatus(msg, active) {
-  document.getElementById('status-text').textContent = msg;
-  const dot = document.getElementById('status-dot');
-  if (active) dot.classList.add('active');
-  else dot.classList.remove('active');
-}
-
 // ─────────────────────────────────────────────
-// POSE RESULTS
+// 포즈 결과 처리
 // ─────────────────────────────────────────────
 function onPoseResults(results) {
   drawLandmarks(results);
-
-  if (!results.poseLandmarks) {
-    setStatus('포즈 감지 안됨', false);
-    return;
-  }
-
+  if (!results.poseLandmarks) { setStatus('포즈 감지 안됨', false); return; }
   setStatus('실시간 감지 중', true);
-  lastLandmarks = results.poseLandmarks;
-  applyPoseToModel(results.poseLandmarks);
+  // worldLandmarks 가 있으면 더 정확한 3D 좌표 사용
+  applyPoseToModel(results.poseWorldLandmarks || results.poseLandmarks);
+}
+
+function setStatus(msg, active) {
+  document.getElementById('status-text').textContent = msg;
+  document.getElementById('status-dot').classList.toggle('active', active);
 }
 
 // ─────────────────────────────────────────────
-// DRAW LANDMARKS ON CANVAS
+// 웹캠 오버레이 스켈레톤 드로잉
 // ─────────────────────────────────────────────
-const CONNECTIONS = [
+const SKEL_CONNECTIONS = [
   [11,12],[11,13],[13,15],[12,14],[14,16],
-  [11,23],[12,24],[23,24],[23,25],[25,27],
-  [24,26],[26,28]
+  [11,23],[12,24],[23,24],[23,25],[25,27],[24,26],[26,28]
 ];
+const KEY_JOINTS = [0,11,12,13,14,15,16,23,24,25,26,27,28];
 
 function drawLandmarks(results) {
   const canvas = document.getElementById('overlay_canvas');
   const ctx = canvas.getContext('2d');
   const video = document.getElementById('input_video');
-
-  canvas.width = video.videoWidth || canvas.offsetWidth;
+  canvas.width  = video.videoWidth  || canvas.offsetWidth;
   canvas.height = video.videoHeight || canvas.offsetHeight;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -840,162 +663,25 @@ function drawLandmarks(results) {
   const lms = results.poseLandmarks;
   const W = canvas.width, H = canvas.height;
 
-  // Draw connections
-  ctx.strokeStyle = '#00ff88';
-  ctx.lineWidth = 2;
-  for (const [a, b] of CONNECTIONS) {
-    const la = lms[a], lb = lms[b];
-    if (la.visibility < 0.3 || lb.visibility < 0.3) continue;
+  ctx.strokeStyle = '#00ff88'; ctx.lineWidth = 2;
+  for (const [a, b] of SKEL_CONNECTIONS) {
+    if (lms[a].visibility < 0.3 || lms[b].visibility < 0.3) continue;
     ctx.beginPath();
-    ctx.moveTo(la.x * W, la.y * H);
-    ctx.lineTo(lb.x * W, lb.y * H);
+    ctx.moveTo(lms[a].x * W, lms[a].y * H);
+    ctx.lineTo(lms[b].x * W, lms[b].y * H);
     ctx.stroke();
   }
-
-  // Draw joints
-  const KEY_IDX = [0,11,12,13,14,15,16,23,24,25,26,27,28];
-  for (const i of KEY_IDX) {
-    const lm = lms[i];
-    if (lm.visibility < 0.3) continue;
+  for (const i of KEY_JOINTS) {
+    if (lms[i].visibility < 0.3) continue;
     ctx.beginPath();
-    ctx.arc(lm.x * W, lm.y * H, 4, 0, Math.PI * 2);
-    ctx.fillStyle = '#00ff88';
-    ctx.fill();
-    ctx.strokeStyle = '#003322';
-    ctx.lineWidth = 1;
-    ctx.stroke();
+    ctx.arc(lms[i].x * W, lms[i].y * H, 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#00ff88'; ctx.fill();
+    ctx.strokeStyle = '#003322'; ctx.lineWidth = 1; ctx.stroke();
   }
 }
 
 // ─────────────────────────────────────────────
-// COORDINATE TRANSFORM & POSE APPLICATION
-// ─────────────────────────────────────────────
-const _v3 = new THREE.Vector3();
-const _q = new THREE.Quaternion();
-const _up = new THREE.Vector3(0, 1, 0);
-
-// Convert MediaPipe landmark to THREE.Vector3
-// MediaPipe: x=0..1 left→right, y=0..1 top→bottom, z depth
-function lmToVec3(lm) {
-  // Flip x (mirror), flip y (up direction)
-  return new THREE.Vector3(-(lm.x - 0.5) * 2, -(lm.y - 0.5) * 2, -lm.z * 2);
-}
-
-function getVec(lms, i) { return lmToVec3(lms[i]); }
-
-// Rotate a bone so its local "direction axis" points toward targetVec
-function rotateBoneToward(boneName, targetDir, localAxis, parentWorldQuat) {
-  const bone = bones[boneName];
-  if (!bone) return;
-
-  const worldDir = targetDir.clone().normalize();
-
-  // Get bone's parent world quaternion
-  const parentQ = parentWorldQuat || new THREE.Quaternion();
-  // Local axis in world space (current)
-  const localAxisWorld = localAxis.clone().applyQuaternion(parentQ).normalize();
-
-  // Quaternion to rotate from localAxisWorld to worldDir
-  const q = new THREE.Quaternion().setFromUnitVectors(localAxisWorld, worldDir);
-
-  // Convert to bone local rotation
-  const localQ = parentQ.clone().invert().multiply(q).multiply(parentQ);
-
-  // Smooth
-  bone.quaternion.slerp(localQ, 1 - smoothing);
-}
-
-// Compute parent world quaternion by walking up the bone chain
-function getWorldQuat(bone) {
-  const q = new THREE.Quaternion();
-  let b = bone.parent;
-  while (b && b.isBone) {
-    q.premultiply(b.quaternion);
-    b = b.parent;
-  }
-  return q;
-}
-
-const LIMB_CONFIGS = [
-  // [ boneName, startLmIdx, endLmIdx, localAxis ]
-  // Arms - MediaPipe: left side = our left (already mirrored above)
-  { bone: BONE_MAP.leftUpperArm,  from: 11, to: 13, axis: new THREE.Vector3(1,0,0) },
-  { bone: BONE_MAP.leftLowerArm,  from: 13, to: 15, axis: new THREE.Vector3(1,0,0) },
-  { bone: BONE_MAP.rightUpperArm, from: 12, to: 14, axis: new THREE.Vector3(-1,0,0) },
-  { bone: BONE_MAP.rightLowerArm, from: 14, to: 16, axis: new THREE.Vector3(-1,0,0) },
-  // Legs
-  { bone: BONE_MAP.leftUpperLeg,  from: 23, to: 25, axis: new THREE.Vector3(0,-1,0) },
-  { bone: BONE_MAP.leftLowerLeg,  from: 25, to: 27, axis: new THREE.Vector3(0,-1,0) },
-  { bone: BONE_MAP.rightUpperLeg, from: 24, to: 26, axis: new THREE.Vector3(0,-1,0) },
-  { bone: BONE_MAP.rightLowerLeg, from: 26, to: 28, axis: new THREE.Vector3(0,-1,0) },
-];
-
-function applyPoseToModel(lms) {
-  if (!bones || !lms) return;
-
-  // Check visibility helper
-  function vis(i) { return lms[i].visibility > 0.5; }
-
-  // ── Spine / torso lean ──
-  if (vis(11) && vis(12) && vis(23) && vis(24)) {
-    const shoulderMid = getVec(lms, 11).add(getVec(lms, 12)).multiplyScalar(0.5);
-    const hipMid = getVec(lms, 23).add(getVec(lms, 24)).multiplyScalar(0.5);
-    const spineDir = shoulderMid.sub(hipMid).normalize();
-
-    const spineBone = bones[BONE_MAP.spine];
-    if (spineBone) {
-      const targetQ = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), spineDir);
-      spineBone.quaternion.slerp(targetQ, 1 - smoothing);
-    }
-  }
-
-  // ── Neck / head ──
-  if (vis(0) && vis(11) && vis(12)) {
-    const shoulderMid = getVec(lms, 11).add(getVec(lms, 12)).multiplyScalar(0.5);
-    const nosePos = getVec(lms, 0);
-    const neckDir = nosePos.sub(shoulderMid).normalize();
-
-    const neckBone = bones[BONE_MAP.neck];
-    if (neckBone) {
-      const targetQ = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), neckDir);
-      neckBone.quaternion.slerp(targetQ, 1 - smoothing);
-    }
-  }
-
-  // ── Hip rotation (twist) ──
-  if (vis(23) && vis(24)) {
-    const lHip = getVec(lms, 23);
-    const rHip = getVec(lms, 24);
-    const hipAxis = lHip.clone().sub(rHip).normalize();
-    // Only apply yaw rotation to hips
-    const hipBone = bones[BONE_MAP.hips];
-    if (hipBone) {
-      const angle = Math.atan2(hipAxis.z, hipAxis.x) - Math.atan2(0, 1);
-      const targetQ = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), angle);
-      hipBone.quaternion.slerp(targetQ, 1 - smoothing);
-    }
-  }
-
-  // ── Limbs ──
-  for (const cfg of LIMB_CONFIGS) {
-    const fromLm = lms[cfg.from];
-    const toLm = lms[cfg.to];
-    if (fromLm.visibility < 0.5 || toLm.visibility < 0.5) continue;
-
-    const fromV = getVec(lms, cfg.from);
-    const toV = getVec(lms, cfg.to);
-    const limbDir = toV.sub(fromV).normalize();
-
-    const bone = bones[cfg.bone];
-    if (!bone) continue;
-
-    const targetQ = new THREE.Quaternion().setFromUnitVectors(cfg.axis.clone().normalize(), limbDir);
-    bone.quaternion.slerp(targetQ, 1 - smoothing);
-  }
-}
-
-// ─────────────────────────────────────────────
-// CONTROLS
+// UI 컨트롤
 // ─────────────────────────────────────────────
 document.getElementById('smoothing').addEventListener('input', function() {
   smoothing = parseFloat(this.value);
@@ -1008,32 +694,28 @@ document.getElementById('char-scale').addEventListener('input', function() {
   if (character) character.scale.setScalar(s);
 });
 
-window.onModelChange = function(val) {
-  if (val === 'custom') {
-    loadGLTFCharacter('./models/character.glb');
-  } else {
-    buildFallbackCharacter();
-  }
+window.onModelChange = val => {
+  if (val === 'custom') loadGLTFCharacter('./models/character.glb');
+  else buildFallbackCharacter();
 };
 
-window.onBgChange = function(val) {
-  if (val === 'light') {
-    scene.background = new THREE.Color(0xdde8ff);
-    scene.fog = new THREE.FogExp2(0xdde8ff, 0.02);
-  } else {
-    scene.background = new THREE.Color(0x0a0a1a);
-    scene.fog = new THREE.FogExp2(0x0a0a1a, 0.03);
-  }
+window.onBgChange = val => {
+  const c = val === 'light' ? 0xdde8ff : 0x0a0a1a;
+  scene.background = new THREE.Color(c);
+  scene.fog = new THREE.FogExp2(c, 0.025);
 };
 
-window.resetPose = function() {
-  for (const bone of Object.values(bones)) {
-    bone.quaternion.set(0, 0, 0, 1);
+window.resetPose = () => {
+  for (const data of Object.values(restData)) {
+    // 이미 restQ 가 저장돼 있으므로 각 bone을 restQ로 복원
+  }
+  for (const [name, bone] of Object.entries(bones)) {
+    if (restData[name]) bone.quaternion.copy(restData[name].restQ);
   }
 };
 
 // ─────────────────────────────────────────────
-// START
+// 시작
 // ─────────────────────────────────────────────
 initThree();
 </script>
