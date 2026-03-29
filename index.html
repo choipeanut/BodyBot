@@ -80,6 +80,19 @@
     text-align: center; color: var(--text-dim);
     display: flex; flex-direction: column; align-items: center; gap: 12px;
   }
+  #toast {
+    position: fixed; bottom: 70px; left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a3a; border: 1px solid var(--neon);
+    color: var(--text); padding: 8px 18px;
+    border-radius: 8px; font-size: 0.78rem;
+    white-space: pre-line; text-align: center;
+    z-index: 100; opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; }
+
   #model-loading .spinner {
     width: 40px; height: 40px;
     border: 3px solid var(--border); border-top-color: var(--neon);
@@ -149,6 +162,7 @@
     </div>
   </div>
   <div id="threejs-panel">
+    <div id="toast"></div>
     <div id="model-loading">
       <div class="spinner"></div>
       <div>character.glb 로드 중...</div>
@@ -205,9 +219,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // ─────────────────────────────────────────────
-// 뼈대 이름 매핑 (Mixamo 기준)
+// 뼈대 이름 매핑 (런타임에 자동 갱신됨)
 // ─────────────────────────────────────────────
-const BONE_MAP = {
+let BONE_MAP = {
   hips:          'mixamorigHips',
   spine:         'mixamorigSpine',
   neck:          'mixamorigNeck',
@@ -220,6 +234,56 @@ const BONE_MAP = {
   rightUpperLeg: 'mixamorigRightUpLeg',
   rightLowerLeg: 'mixamorigRightLeg',
 };
+
+// 뼈 이름 후보 목록 (Mixamo / 기타 익스포터 / VRM 등)
+const BONE_CANDIDATES = {
+  hips:          ['mixamorigHips','Hips','hips','pelvis','Pelvis','Hip','CC_Base_Hip'],
+  spine:         ['mixamorigSpine','Spine','spine','Spine1','spine01','CC_Base_Spine01'],
+  neck:          ['mixamorigNeck','Neck','neck','CC_Base_NeckTwist01'],
+  leftUpperArm:  ['mixamorigLeftArm','LeftArm','Left_Arm','mixamorig:LeftArm','UpperArm_L','CC_Base_L_Upperarm'],
+  leftLowerArm:  ['mixamorigLeftForeArm','LeftForeArm','Left_ForeArm','ForeArm_L','CC_Base_L_Forearm'],
+  rightUpperArm: ['mixamorigRightArm','RightArm','Right_Arm','UpperArm_R','CC_Base_R_Upperarm'],
+  rightLowerArm: ['mixamorigRightForeArm','RightForeArm','Right_ForeArm','ForeArm_R','CC_Base_R_Forearm'],
+  leftUpperLeg:  ['mixamorigLeftUpLeg','LeftUpLeg','LeftThigh','Thigh_L','CC_Base_L_Thigh'],
+  leftLowerLeg:  ['mixamorigLeftLeg','LeftLeg','LeftShin','Shin_L','CC_Base_L_Calf'],
+  rightUpperLeg: ['mixamorigRightUpLeg','RightUpLeg','RightThigh','Thigh_R','CC_Base_R_Thigh'],
+  rightLowerLeg: ['mixamorigRightLeg','RightLeg','RightShin','Shin_R','CC_Base_R_Calf'],
+};
+
+// 실제 뼈대 목록에서 BONE_MAP 자동 해석
+function resolveBoneMap() {
+  const allNames = Object.keys(bones);
+  const resolved = {};
+
+  for (const [key, candidates] of Object.entries(BONE_CANDIDATES)) {
+    // 1) 정확한 이름 매칭
+    for (const c of candidates) {
+      if (bones[c]) { resolved[key] = c; break; }
+    }
+    // 2) 부분 문자열 매칭 (대소문자 무시)
+    if (!resolved[key]) {
+      for (const c of candidates) {
+        const lo = c.toLowerCase();
+        const match = allNames.find(n => n.toLowerCase() === lo || n.toLowerCase().endsWith(lo));
+        if (match) { resolved[key] = match; break; }
+      }
+    }
+  }
+
+  const found = Object.keys(resolved).length;
+  const total = Object.keys(BONE_CANDIDATES).length;
+  console.log(`[MotionMirror] 뼈대 매핑: ${found}/${total}개 해결됨`, resolved);
+
+  if (found === 0) {
+    showToast(`⚠️ 뼈대를 찾지 못했습니다.\n모델 뼈 이름: ${allNames.slice(0,6).join(', ')}...`, 6000);
+  } else if (found < total) {
+    showToast(`✓ 뼈대 ${found}/${total}개 매핑됨 (일부 누락)`, 3000);
+  } else {
+    showToast(`✓ 뼈대 ${found}개 모두 매핑됨`, 2000);
+  }
+
+  return resolved;
+}
 
 // ─────────────────────────────────────────────
 // 전역 상태
@@ -316,6 +380,18 @@ function initThree() {
 }
 
 // ─────────────────────────────────────────────
+// 토스트 메시지
+// ─────────────────────────────────────────────
+let toastTimer = null;
+function showToast(msg, ms = 3000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), ms);
+}
+
+// ─────────────────────────────────────────────
 // GLTF 로더
 // ─────────────────────────────────────────────
 const gltfLoader = new GLTFLoader();
@@ -323,17 +399,18 @@ const gltfLoader = new GLTFLoader();
 function loadGLTFCharacter(url) {
   const loadingEl = document.getElementById('model-loading');
   loadingEl.style.display = 'flex';
-  loadingEl.querySelector('div:last-child').textContent = 'character.glb 로드 중...';
+  loadingEl.querySelector('div:last-child').textContent = url + ' 로드 중...';
 
   gltfLoader.load(url, (gltf) => {
-    replaceCharacter(gltf.scene);
     gltf.scene.traverse(obj => {
       if (obj.isMesh) { obj.castShadow = true; obj.receiveShadow = true; }
     });
+    replaceCharacter(gltf.scene);
     loadingEl.style.display = 'none';
-    console.log('[MotionMirror] GLTF 로드 완료. 뼈대:', Object.keys(bones).filter(n => n.startsWith('mixamorig')));
+    console.log('[MotionMirror] GLTF 로드 완료. 전체 오브젝트:', Object.keys(bones).length, '개');
   }, undefined, (err) => {
     console.warn('[MotionMirror] GLTF 로드 실패 → 박스맨 사용:', err.message);
+    showToast(`⚠️ ${url} 로드 실패\n박스맨으로 대체됩니다.\n(models/ 폴더에 파일이 있는지 확인하세요)`, 5000);
     buildFallbackCharacter();
     loadingEl.style.display = 'none';
     document.getElementById('model-select').value = 'fallback';
@@ -348,7 +425,14 @@ function replaceCharacter(newGroup) {
   character.scale.setScalar(s);
   scene.add(character);
   character.updateMatrixWorld(true);
-  character.traverse(obj => { if (obj.isBone) bones[obj.name] = obj; });
+
+  // isBone 뿐 아니라 모든 named Object3D 수집 (GLB 익스포터마다 다름)
+  character.traverse(obj => {
+    if (obj.name) bones[obj.name] = obj;
+  });
+
+  // 실제 뼈 이름으로 BONE_MAP 동적 재해석
+  BONE_MAP = resolveBoneMap();
   storeRestData();
 }
 
