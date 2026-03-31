@@ -258,6 +258,8 @@ let BONE_MAP = {
   leftLowerLeg:  'mixamorigLeftLeg',
   rightUpperLeg: 'mixamorigRightUpLeg',
   rightLowerLeg: 'mixamorigRightLeg',
+  leftHand:      'mixamorigLeftHand',
+  rightHand:     'mixamorigRightHand',
   // 왼손 손가락
   leftThumb1:'mixamorigLeftHandThumb1', leftThumb2:'mixamorigLeftHandThumb2', leftThumb3:'mixamorigLeftHandThumb3',
   leftIndex1:'mixamorigLeftHandIndex1', leftIndex2:'mixamorigLeftHandIndex2', leftIndex3:'mixamorigLeftHandIndex3',
@@ -284,6 +286,8 @@ const BONE_CANDIDATES = {
   leftLowerLeg:  ['mixamorigLeftLeg','LeftLeg','LeftShin','Shin_L','CC_Base_L_Calf'],
   rightUpperLeg: ['mixamorigRightUpLeg','RightUpLeg','RightThigh','Thigh_R','CC_Base_R_Thigh'],
   rightLowerLeg: ['mixamorigRightLeg','RightLeg','RightShin','Shin_R','CC_Base_R_Calf'],
+  leftHand:      ['mixamorigLeftHand','LeftHand','Left_Hand','Hand_L','CC_Base_L_Hand'],
+  rightHand:     ['mixamorigRightHand','RightHand','Right_Hand','Hand_R','CC_Base_R_Hand'],
   // 손가락 — Mixamo 이름 + 일반 패턴
   leftThumb1: ['mixamorigLeftHandThumb1','LeftHandThumb1','Left_Thumb1','thumb_01_l'],
   leftThumb2: ['mixamorigLeftHandThumb2','LeftHandThumb2','Left_Thumb2','thumb_02_l'],
@@ -790,14 +794,48 @@ const FINGER_SEGS_R = [
   {key:'rightPinky1', from:17,to:18},{key:'rightPinky2', from:18,to:19},{key:'rightPinky3', from:19,to:20},
 ];
 
-function applyHandToModel(handLms, segs) {
+function applyHandToModel(handLms, segs, isLeft) {
   if (!handLms || !character || Object.keys(restData).length === 0) return;
-  // 손 랜드마크도 동일한 이미지 정규화 좌표 [0,1]
+  // 손 랜드마크 좌표 변환 (이미지 정규화 [0,1] → Three.js)
   const toH = i => new THREE.Vector3(
     (handLms[i].x - 0.5),
     -(handLms[i].y - 0.5),
     -(handLms[i].z ?? 0) * 0.3
   );
+
+  // ── 손목 전체 회전 (손바닥 뒤집기 반영) ──────────────────
+  const handBoneName = BONE_MAP[isLeft ? 'leftHand' : 'rightHand'];
+  const handBone = handBoneName ? bones[handBoneName] : null;
+  if (handBone) {
+    const wrist     = toH(0);
+    const midBase   = toH(9);   // 중지 뿌리 → 손의 앞 방향
+    const indexBase = toH(5);   // 검지 뿌리
+    const pinkyBase = toH(17);  // 새끼 뿌리
+
+    // 손 앞 방향: 손목 → 중지 뿌리
+    const handFwd = midBase.clone().sub(wrist).normalize();
+
+    // 손바닥 법선: 손목→새끼 × 손목→검지 (오른손 기준, 왼손은 반전)
+    const v1 = pinkyBase.clone().sub(wrist);
+    const v2 = indexBase.clone().sub(wrist);
+    const palmNormal = new THREE.Vector3().crossVectors(v1, v2).normalize();
+    if (isLeft) palmNormal.negate();
+
+    // 오른쪽 방향 & 위 방향 직교화
+    const handRight = new THREE.Vector3().crossVectors(handFwd, palmNormal).normalize();
+    const handUp    = new THREE.Vector3().crossVectors(handRight, handFwd).normalize();
+
+    const mat    = new THREE.Matrix4().makeBasis(handRight, handUp, handFwd);
+    const worldQ = new THREE.Quaternion().setFromRotationMatrix(mat);
+
+    const parentWorldQ = new THREE.Quaternion();
+    if (handBone.parent) handBone.parent.getWorldQuaternion(parentWorldQ);
+    const localQ = worldQ.clone().premultiply(parentWorldQ.clone().invert());
+    handBone.quaternion.slerp(localQ, 1.0 - smoothing);
+    character.updateMatrixWorld(true);
+  }
+
+  // ── 손가락 각 마디 방향 ────────────────────────────────
   for (const {key, from, to} of segs) {
     const boneName = BONE_MAP[key];
     if (!boneName) continue;
@@ -896,8 +934,8 @@ function onHolisticResults(results) {
   setStatus('실시간 감지 중', true);
   applyPoseToModel(results.poseLandmarks);
   // leftHandLandmarks = 사람의 해부학적 왼손, rightHandLandmarks = 오른손
-  applyHandToModel(results.leftHandLandmarks,  FINGER_SEGS_L);
-  applyHandToModel(results.rightHandLandmarks, FINGER_SEGS_R);
+  applyHandToModel(results.leftHandLandmarks,  FINGER_SEGS_L, true);
+  applyHandToModel(results.rightHandLandmarks, FINGER_SEGS_R, false);
 }
 
 function setStatus(msg, active) {
