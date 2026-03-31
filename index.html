@@ -803,36 +803,11 @@ function applyHandToModel(handLms, segs, isLeft) {
     -(handLms[i].z ?? 0) * 0.3
   );
 
-  // ── 손목 전체 회전 (거울: isLeft=true는 왼손 geometry → 오른쪽 bone) ──
+  // ── 손목 방향 (손목→중지뿌리 방향만 적용, Matrix4 전체회전 제거로 뼈 충돌 방지) ──
   const handBoneName = BONE_MAP[isLeft ? 'rightHand' : 'leftHand'];
-  const handBone = handBoneName ? bones[handBoneName] : null;
-  if (handBone) {
-    const wrist     = toH(0);
-    const midBase   = toH(9);   // 중지 뿌리 → 손의 앞 방향
-    const indexBase = toH(5);   // 검지 뿌리
-    const pinkyBase = toH(17);  // 새끼 뿌리
-
-    // 손 앞 방향: 손목 → 중지 뿌리
-    const handFwd = midBase.clone().sub(wrist).normalize();
-
-    // 손바닥 법선: 손목→새끼 × 손목→검지 (오른손 기준, 왼손은 반전)
-    const v1 = pinkyBase.clone().sub(wrist);
-    const v2 = indexBase.clone().sub(wrist);
-    const palmNormal = new THREE.Vector3().crossVectors(v1, v2).normalize();
-    if (isLeft) palmNormal.negate();
-
-    // handRight: handFwd × palmNormal
-    // handUp: handFwd × handRight → 손등 방향(dorsal) = -palmNormal 이 되어 손바닥이 viewer 쪽을 향함
-    const handRight = new THREE.Vector3().crossVectors(handFwd, palmNormal).normalize();
-    const handUp    = new THREE.Vector3().crossVectors(handFwd, handRight).normalize();
-
-    const mat    = new THREE.Matrix4().makeBasis(handRight, handUp, handFwd);
-    const worldQ = new THREE.Quaternion().setFromRotationMatrix(mat);
-
-    const parentWorldQ = new THREE.Quaternion();
-    if (handBone.parent) handBone.parent.getWorldQuaternion(parentWorldQ);
-    const localQ = worldQ.clone().premultiply(parentWorldQ.clone().invert());
-    handBone.quaternion.slerp(localQ, 1.0 - smoothing);
+  const handFwd = toH(9).sub(toH(0));
+  if (handBoneName && handFwd.lengthSq() > 1e-6) {
+    setBoneDir(handBoneName, handFwd.normalize());
     character.updateMatrixWorld(true);
   }
 
