@@ -762,17 +762,17 @@ function applyPoseToModel(lms) {
     setBoneDir(BONE_MAP.neck, toV(0).sub(shoulderMid));
   }
 
-  // ── 팔 ──
-  if (vis(11) && vis(13)) setBoneDir(BONE_MAP.leftUpperArm,  segDir(11, 13));
-  if (vis(13) && vis(15)) setBoneDir(BONE_MAP.leftLowerArm,  segDir(13, 15));
-  if (vis(12) && vis(14)) setBoneDir(BONE_MAP.rightUpperArm, segDir(12, 14));
-  if (vis(14) && vis(16)) setBoneDir(BONE_MAP.rightLowerArm, segDir(14, 16));
+  // ── 팔 (거울: 내 오른팔 → 캐릭터 왼팔, 내 왼팔 → 캐릭터 오른팔) ──
+  if (vis(11) && vis(13)) setBoneDir(BONE_MAP.rightUpperArm, segDir(11, 13));
+  if (vis(13) && vis(15)) setBoneDir(BONE_MAP.rightLowerArm, segDir(13, 15));
+  if (vis(12) && vis(14)) setBoneDir(BONE_MAP.leftUpperArm,  segDir(12, 14));
+  if (vis(14) && vis(16)) setBoneDir(BONE_MAP.leftLowerArm,  segDir(14, 16));
 
-  // ── 다리 ──
-  if (vis(23) && vis(25)) setBoneDir(BONE_MAP.leftUpperLeg,  segDir(23, 25));
-  if (vis(25) && vis(27)) setBoneDir(BONE_MAP.leftLowerLeg,  segDir(25, 27));
-  if (vis(24) && vis(26)) setBoneDir(BONE_MAP.rightUpperLeg, segDir(24, 26));
-  if (vis(26) && vis(28)) setBoneDir(BONE_MAP.rightLowerLeg, segDir(26, 28));
+  // ── 다리 (거울: 내 오른다리 → 캐릭터 왼다리, 내 왼다리 → 캐릭터 오른다리) ──
+  if (vis(23) && vis(25)) setBoneDir(BONE_MAP.rightUpperLeg, segDir(23, 25));
+  if (vis(25) && vis(27)) setBoneDir(BONE_MAP.rightLowerLeg, segDir(25, 27));
+  if (vis(24) && vis(26)) setBoneDir(BONE_MAP.leftUpperLeg,  segDir(24, 26));
+  if (vis(26) && vis(28)) setBoneDir(BONE_MAP.leftLowerLeg,  segDir(26, 28));
 }
 
 // ─────────────────────────────────────────────
@@ -803,8 +803,8 @@ function applyHandToModel(handLms, segs, isLeft) {
     -(handLms[i].z ?? 0) * 0.3
   );
 
-  // ── 손목 전체 회전 (손바닥 뒤집기 반영) ──────────────────
-  const handBoneName = BONE_MAP[isLeft ? 'leftHand' : 'rightHand'];
+  // ── 손목 전체 회전 (거울: isLeft=true는 왼손 geometry → 오른쪽 bone) ──
+  const handBoneName = BONE_MAP[isLeft ? 'rightHand' : 'leftHand'];
   const handBone = handBoneName ? bones[handBoneName] : null;
   if (handBone) {
     const wrist     = toH(0);
@@ -934,9 +934,9 @@ function onHolisticResults(results) {
   if (!results.poseLandmarks) { setStatus('포즈 감지 안됨', false); return; }
   setStatus('실시간 감지 중', true);
   applyPoseToModel(results.poseLandmarks);
-  // leftHandLandmarks = 사람의 해부학적 왼손, rightHandLandmarks = 오른손
-  applyHandToModel(results.leftHandLandmarks,  FINGER_SEGS_L, true);
-  applyHandToModel(results.rightHandLandmarks, FINGER_SEGS_R, false);
+  // 거울: 내 왼손 → 캐릭터 오른쪽 손가락, 내 오른손 → 캐릭터 왼쪽 손가락
+  applyHandToModel(results.leftHandLandmarks,  FINGER_SEGS_R, true);
+  applyHandToModel(results.rightHandLandmarks, FINGER_SEGS_L, false);
 }
 
 function setStatus(msg, active) {
