@@ -803,12 +803,52 @@ function applyHandToModel(handLms, segs, isLeft) {
     -(handLms[i].z ?? 0) * 0.3
   );
 
-  // ── 손목 방향 (손목→중지뿌리 방향만 적용, Matrix4 전체회전 제거로 뼈 충돌 방지) ──
+  // ── 손목 방향 + 손바닥 뒤집기 (swing-twist 분리) ──────────
   const handBoneName = BONE_MAP[isLeft ? 'rightHand' : 'leftHand'];
-  const handFwd = toH(9).sub(toH(0));
-  if (handBoneName && handFwd.lengthSq() > 1e-6) {
-    setBoneDir(handBoneName, handFwd.normalize());
-    character.updateMatrixWorld(true);
+  const handBone = handBoneName ? bones[handBoneName] : null;
+  if (handBone) {
+    const wrist   = toH(0);
+    const midBase = toH(9);
+    const handFwd = midBase.clone().sub(wrist).normalize();
+
+    if (handFwd.lengthSq() > 1e-6) {
+      // 1. Swing: 손이 가리키는 방향
+      setBoneDir(handBoneName, handFwd);
+      character.updateMatrixWorld(true);
+
+      // 2. 손바닥 법선 (viewer 방향이 +Z)
+      const v1 = toH(17).sub(wrist);  // wrist → 새끼뿌리
+      const v2 = toH(5).sub(wrist);   // wrist → 검지뿌리
+      const palmNormal = new THREE.Vector3().crossVectors(v1, v2).normalize();
+      if (isLeft) palmNormal.negate(); // 왼손 geometry 보정
+
+      // 3. Twist: handFwd 축 수직 평면에서 현재 손등 방향 → 목표 손등 방향
+      //    Mixamo hand bone local +Y ≈ 손등(dorsal) 방향
+      const handWorldQ = new THREE.Quaternion();
+      handBone.getWorldQuaternion(handWorldQ);
+      const dorsalCurr   = new THREE.Vector3(0, 1, 0).applyQuaternion(handWorldQ);
+      const dorsalWanted = palmNormal.clone().negate(); // palm→viewer이면 dorsal은 반대
+
+      const proj = v => {
+        const d = v.clone().sub(handFwd.clone().multiplyScalar(v.dot(handFwd)));
+        return d.lengthSq() > 1e-6 ? d.normalize() : null;
+      };
+      const pCurr = proj(dorsalCurr);
+      const pWant = proj(dorsalWanted);
+
+      if (pCurr && pWant) {
+        const twistQ      = new THREE.Quaternion().setFromUnitVectors(pCurr, pWant);
+        const parentWorldQ = new THREE.Quaternion();
+        if (handBone.parent) handBone.parent.getWorldQuaternion(parentWorldQ);
+        const worldQCurr  = new THREE.Quaternion();
+        handBone.getWorldQuaternion(worldQCurr);
+        // world 공간 twist 적용 후 parent-local로 변환
+        const localQFinal = twistQ.clone().multiply(worldQCurr)
+          .premultiply(parentWorldQ.clone().invert());
+        handBone.quaternion.slerp(localQFinal, 1.0 - smoothing);
+        character.updateMatrixWorld(true);
+      }
+    }
   }
 
   // ── 손가락 각 마디 방향 ────────────────────────────────
