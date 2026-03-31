@@ -699,11 +699,11 @@ function applyPoseToModel(lms) {
 
   // MediaPipe 좌표 → Three.js 월드 벡터
   // poseLandmarks: x[0..1] 왼→오, y[0..1] 위→아래, z(상대 깊이)
-  // - x: 미러(selfie) 뷰이므로 뒤집지 않음 (landmark 11=사람 왼쪽 = 화면 오른쪽 = 캐릭터 왼쪽 +X)
+  // - x: raw 카메라(비미러)이므로 부호 반전 → CSS scaleX(-1) 화면과 동기화되어 거울 효과
   // - y: 뒤집기 (화면 아래 = 월드 위쪽 반전)
   // - z: 깊이 보정
   const toV = i => new THREE.Vector3(
-     (lms[i].x - 0.5),
+    -(lms[i].x - 0.5),
     -(lms[i].y - 0.5),
     -(lms[i].z ?? 0) * 0.5
   );
@@ -723,8 +723,8 @@ function applyPoseToModel(lms) {
 
     // 몸의 위 방향 (힙→어깨)
     const bodyUp    = shoulderMid.clone().sub(hipMid).normalize();
-    // 몸의 오른쪽 방향: lSh-rSh → 정면 기준 +X (미러 좌표계)
-    const bodyRight = lSh.clone().sub(rSh).normalize();
+    // 몸의 오른쪽 방향: x 반전 후 rSh가 +X 쪽이므로 rSh-lSh → +X
+    const bodyRight = rSh.clone().sub(lSh).normalize();
 
     // 앞 방향 = right × up → 정면 기준 +Z
     const bodyFwd        = new THREE.Vector3().crossVectors(bodyRight, bodyUp).normalize();
@@ -796,9 +796,9 @@ const FINGER_SEGS_R = [
 
 function applyHandToModel(handLms, segs, isLeft) {
   if (!handLms || !character || Object.keys(restData).length === 0) return;
-  // 손 랜드마크 좌표 변환 (이미지 정규화 [0,1] → Three.js)
+  // 손 랜드마크 좌표 변환 (x 반전 → 거울 효과, body toV와 동일 규칙)
   const toH = i => new THREE.Vector3(
-    (handLms[i].x - 0.5),
+    -(handLms[i].x - 0.5),
     -(handLms[i].y - 0.5),
     -(handLms[i].z ?? 0) * 0.3
   );
@@ -821,9 +821,10 @@ function applyHandToModel(handLms, segs, isLeft) {
     const palmNormal = new THREE.Vector3().crossVectors(v1, v2).normalize();
     if (isLeft) palmNormal.negate();
 
-    // 오른쪽 방향 & 위 방향 직교화
+    // handRight: handFwd × palmNormal
+    // handUp: handFwd × handRight → 손등 방향(dorsal) = -palmNormal 이 되어 손바닥이 viewer 쪽을 향함
     const handRight = new THREE.Vector3().crossVectors(handFwd, palmNormal).normalize();
-    const handUp    = new THREE.Vector3().crossVectors(handRight, handFwd).normalize();
+    const handUp    = new THREE.Vector3().crossVectors(handFwd, handRight).normalize();
 
     const mat    = new THREE.Matrix4().makeBasis(handRight, handUp, handFwd);
     const worldQ = new THREE.Quaternion().setFromRotationMatrix(mat);
